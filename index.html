@@ -33,29 +33,29 @@
 
     function preload ()
     {
-        this.load.setBaseURL('http://labs.phaser.io');
+        this.load.setBaseURL('./');
 
-        this.load.image('sky', 'assets/skies/space3.png');
-        this.load.image('logo', 'assets/sprites/phaser3-logo.png');
-        this.load.image('red', 'assets/particles/red.png');
+        this.load.image('board', 'board.jpg');
+        this.load.image('loris', 'slow-loris.png');
+        this.load.image('red', 'slow-loris.png');
     }
 
     function create ()
     {
-        this.add.image(400, 300, 'sky');
+        this.add.image(400, 300, 'board');
 
-        var particles = this.add.particles('blue');
+        var particles = this.add.particles('red');
 
         var emitter = particles.createEmitter({
-            speed: 100,
+            speed: 500,
             scale: { start: 1, end: 0 },
-            blendMode: 'ADD'
+            blendMode: 'SUB'
         });
 
-        var logo = this.physics.add.image(400, 100, 'logo');
+        var logo = this.physics.add.image(50, 50, 'loris');
 
-        logo.setVelocity(100, 200);
-        logo.setBounce(1, 1);
+        logo.setVelocity(100,50);
+        logo.setBounce(1, .98);
         logo.setCollideWorldBounds(true);
 
         emitter.startFollow(logo);
