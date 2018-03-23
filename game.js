@@ -44,7 +44,7 @@ function create (){
     downKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K)
     upKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I)
 
-    player = this.physics.add.sprite(100, 450, 'loris');
+    player = this.physics.add.sprite(300, 150, 'loris');
 
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
@@ -79,30 +79,24 @@ function create (){
 }
 
 function update(){
-    x = 0
-    y = 0
-    if (leftKey.isDown){
-        x -= 100
-    }
-    if (rightKey.isDown){
-        x += 100
-    }
-    if (upKey.isDown){
-        y -= 100
-    }
-    if(downKey.isDown){
-        y += 100
-    }
-    movePlayer(player, x, y)
+    let player_move_amt = 600
+
+    movePlayer(leftKey, rightKey, upKey, downKey, player_move_amt)
+    // Jump sample from phaser3 tutorial
     // if (cursors.up.isDown && player.body.touching.down)
     // {
     //     player.setVelocityY(-330)
     // }
 }
 
-function movePlayer(player, x, y){
-    player.setVelocityX(x)
-    player.setVelocityY(y)
+function moveObject( something, x, y){
+    something.setVelocityX(x)
+    something.setVelocityY(y)
+}
+
+function animateObject(something, x, y){
+    //convert vector to radian for fun :_)
+    direction = Math.atan(y/x)
 
     if(x>0){
         if(y>0){
@@ -111,7 +105,7 @@ function movePlayer(player, x, y){
             //animate to the south east
         }else{
             //animate to the east
-            player.anims.play('right', true)
+            something.anims.play('right', true)
         }
     }else if(x<0){
         if(y>0){
@@ -120,15 +114,36 @@ function movePlayer(player, x, y){
             //animate to the southwest
         }else{
             //animate to the west
-            player.anims.play('left', true)
+            something.anims.play('left', true)
         }
-    }else if(y>0){
+    }else if(y>0 && something.body.touching.down){
         //animate to the north
+        
 
     }else if(y<0){
         //animate to the south
 
     }
+
+}
+
+function movePlayer(leftKey, rightKey, upKey , downKey, distance){
+    x = 0
+    y = 0
+
+    if (leftKey.isDown){
+        x -= distance
+    }
+    if (rightKey.isDown){
+        x += distance
+    }
+    if (upKey.isDown){
+        y -= distance
+    }
+    if(downKey.isDown){
+        y += distance
+    }
+    moveObject(player, x, y)
 
     
 }
