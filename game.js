@@ -104,6 +104,7 @@ if (cursors.up.isDown && player.body.touching.down)
 function movePlayer(player, x, y){
     player.setVelocityX(x)
     player.setVelocityY(y)
+    
     if(x>0){
         if(y>0){
             //animate to the northeast
