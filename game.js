@@ -5,7 +5,7 @@ var config = {
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 300 },
+            gravity: { y: 3 },
             debug: false
         }
     },
@@ -39,15 +39,18 @@ function create (){
     platforms.create(50, 250, 'red');
     platforms.create(750, 220, 'red');
 
-    leftKey = game.input.keyboard.addKey(Phaser.Keyboard.J)
-    rightKey = game.input.keyboard.addKey(Phaser.Keyboard.L)
-    downKey = game.input.keyboard.addKey(Phaser.Keyboard.K)
-    upKey = game.input.keyboard.addKey(Phaser.Keyboard.I)
+    leftKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J)
+    rightKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L)
+    downKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K)
+    upKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I)
 
-    player = this.physics.add.sprite(50, 8, 'loris');
+    player = this.physics.add.sprite(100, 450, 'loris');
 
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
+    player.body.setGravityY(3000)
+    this.physics.add.collider(player, platforms)
+
 
     this.anims.create({
         key: 'left',
@@ -76,35 +79,31 @@ function create (){
 }
 
 function update(){
-
-    if (leftKey.isDown)
-{
-    player.setVelocityX(-160);
-
-    player.anims.play('left', true);
-}
-else if (cursors.right.isDown)
-{
-    player.setVelocityX(160);
-
-    player.anims.play('right', true);
-}
-else
-{
-    player.setVelocityX(0)
-    player.anims.play('turn')
-}
-
-if (cursors.up.isDown && player.body.touching.down)
-{
-    player.setVelocityY(-330)
-}
+    x = 0
+    y = 0
+    if (leftKey.isDown){
+        x -= 100
+    }
+    if (rightKey.isDown){
+        x += 100
+    }
+    if (upKey.isDown){
+        y -= 100
+    }
+    if(downKey.isDown){
+        y += 100
+    }
+    movePlayer(player, x, y)
+    // if (cursors.up.isDown && player.body.touching.down)
+    // {
+    //     player.setVelocityY(-330)
+    // }
 }
 
 function movePlayer(player, x, y){
     player.setVelocityX(x)
     player.setVelocityY(y)
-    
+
     if(x>0){
         if(y>0){
             //animate to the northeast
@@ -112,6 +111,7 @@ function movePlayer(player, x, y){
             //animate to the south east
         }else{
             //animate to the east
+            player.anims.play('right', true)
         }
     }else if(x<0){
         if(y>0){
@@ -120,12 +120,15 @@ function movePlayer(player, x, y){
             //animate to the southwest
         }else{
             //animate to the west
+            player.anims.play('left', true)
         }
     }else if(y>0){
         //animate to the north
+
     }else if(y<0){
         //animate to the south
+
     }
 
-    player.anims.play('left', true)
+    
 }
