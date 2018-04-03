@@ -43,12 +43,14 @@ function create (){
     rightKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L)
     downKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K)
     upKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I)
+    angleKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
 
     player = this.physics.add.sprite(300, 150, 'loris');
-
+    console.log(player)
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
     player.body.setGravityY(3000)
+    player.setAngularFriction(34)
     this.physics.add.collider(player, platforms)
 
 
@@ -80,7 +82,9 @@ function create (){
 
 function update(){
     let player_move_amt = 600
-
+    if(angleKey.isDown){
+        player.setAngularVelocity(400)
+    }
     movePlayer(leftKey, rightKey, upKey, downKey, player_move_amt)
     // Jump sample from phaser3 tutorial
     // if (cursors.up.isDown && player.body.touching.down)
@@ -92,6 +96,7 @@ function update(){
 function moveObject( something, x, y){
     something.setVelocityX(x)
     something.setVelocityY(y)
+
 }
 
 function animateObject(something, x, y){

@@ -6,13 +6,11 @@
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/JSitter/electron-loris.git",
   "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "Phaser3",
+    "Javascript",
+    "Game"
   ],
   "author": "GitHub",
   "license": "CC0-1.0",
