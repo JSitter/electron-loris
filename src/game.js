@@ -16,20 +16,37 @@ var config = {
     }
 };
 
+var map, waveTiles, groundTiles, waveLayer, groundLayer, countdown, changed;
 var game = new Phaser.Game(config);
 
 function preload (){
     
+    this.load.plugin('AnimatedTiles', '../src/animated-tiles.js');
     this.load.setBaseURL('./assets/');
+    this.load.tilemapTiledJSON('map', 'sma-loris.json');
+    this.load.image('ground_tiles', 'ground_tiles.png');
+    this.load.image('beach_sand_woa3', 'beach_sand_woa3.png');
 
-    this.load.image('board', 'board.jpg');
+
     this.load.spritesheet('loris', 'slow-loris.png', { frameWidth: 32, frameHeight: 48 });
-    this.load.image('red', 'slow-loris.png');
+
 }
 
 function create (){
-    this.add.image(400, 300, 'board');
-    this.add.image(32, 48, 'red')
+    // Install animated tiles plugin
+    this.sys.install('AnimatedTiles');
+    map = this.make.tilemap({ key: 'map' });
+
+    waveTiles = map.addTilesetImage('beach_sand_woa3', 'beach_sand_woa3' )
+    groundTiles = map.addTilesetImage('ground_tiles', 'ground_tiles' )
+
+    groundLayer = map.createDynamicLayer('Base', groundTiles, 0, 0);
+    waveLayer = map.createDynamicLayer('waves', waveTiles, 0, 0);
+    // Init animations on map
+    this.sys.animatedTiles.init(map);
+
+    // this.add.image(400, 300, 'board');
+    // this.add.image(32, 48, 'red')
    
     leftKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J)
     rightKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L)
@@ -70,9 +87,12 @@ function create (){
     // logo.setCollideWorldBounds(true);
 
     // emitter.startFollow(logo);
+
+    // countdown 5 sek until change
+    countdown = 5000;
 }
 
-function update(){
+function update(time, delta){
     let player_move_amt = 600
     if(angleKey.isDown){
         player.setAngularVelocity(400)
@@ -83,6 +103,20 @@ function update(){
     // {
     //     player.setVelocityY(-330)
     // }
+    countdown-=delta;
+    // countdown is done, but the change hasn't been done
+    if(countdown <0 && !changed){
+        // Native API-method to fill area with tiles
+        // layer3.fill(1525, 1, 1, 3, 3);
+        // Need to tell the plugin about the new tiles.
+        // ATM it will go through all tilemaps and layers,
+        // but I'll add support for limiting the task to
+        // maps, layers and areas within that. 
+        console.log(this.sys)
+        this.sys.animatedTiles.updateAnimatedTiles();
+        // Ok. don't hammer tiles on each update-loop. the change is done.
+        changed = true;
+}
 }
 
 function moveObject( something, x, y){
