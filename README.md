@@ -15,5 +15,7 @@ Clone this repository
 `git clone https://github.com/JSitter/electron-loris.git`
 
 Install
-`cd electron-loris
-npm install && start`
+``
+cd electron-loris
+npm install && start
+``
