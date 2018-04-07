@@ -1,7 +1,34 @@
+//Trying to break these into separate file isn't working
+class Player{
+    constructor(){
+        this.health = 100
+        this.x = 0
+        this.y = 0
+    }
+
+    setPosition(x,y){
+        this.x = x
+        this.y = y
+    }
+
+    injure(damage){
+        this.health -= damage
+    }
+}
+
+class Mob{
+    constructor(name, armor, health, damage){
+        this.name = name
+        this.armor = armor
+        this.health = health
+        this.damage = damage
+    }
+}
+
 var config = {
     type: Phaser.AUTO,
     width: 800,
-    height: 600,
+    height: 800,
     physics: {
         default: 'arcade',
         arcade: {
@@ -17,7 +44,11 @@ var config = {
 };
 
 var map, waveTiles, groundTiles, waveLayer, groundLayer, countdown, changed;
+var camera;
 var game = new Phaser.Game(config);
+var gameRunning = true
+
+
 
 function preload (){
     
@@ -29,24 +60,31 @@ function preload (){
 
 
     this.load.spritesheet('loris', 'slow-loris.png', { frameWidth: 32, frameHeight: 48 });
-
+    console.log("preload finished")
 }
-
+var shakeTime = 0
 function create (){
     // Install animated tiles plugin
     this.sys.install('AnimatedTiles');
     map = this.make.tilemap({ key: 'map' });
-
-    waveTiles = map.addTilesetImage('beach_sand_woa3', 'beach_sand_woa3' )
-    groundTiles = map.addTilesetImage('ground_tiles', 'ground_tiles' )
-
+    console.log(map)
+    
+    groundTiles = map.addTilesetImage('avalon-ground', 'ground_tiles' )
+    waveTiles = map.addTilesetImage('av-waves-3', 'beach_sand_woa3' )
+    console.log("go fetch Avalon Ground tiles")
+    console.log(groundTiles)
     groundLayer = map.createDynamicLayer('Base', groundTiles, 0, 0);
     waveLayer = map.createDynamicLayer('waves', waveTiles, 0, 0);
+    console.log("Charmed")
     // Init animations on map
     this.sys.animatedTiles.init(map);
 
     // this.add.image(400, 300, 'board');
     // this.add.image(32, 48, 'red')
+    this.cameras.main.setSize(800, 800)
+    console.log("Main Camera")
+    console.log(this.cameras.main)
+    // camera = this.cameras.add();
    
     leftKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J)
     rightKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L)
@@ -55,10 +93,18 @@ function create (){
     angleKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
 
     player = this.physics.add.sprite(300, 150, 'loris');
+    this.cameras.main.startFollow(player)
+    console.log("Player object:")
     console.log(player)
+    Loris = new Player()
+
     player.setBounce(0.2);
+    console.log("Game Object:")
+    console.log(game)
+
+
     player.setCollideWorldBounds(true);
-    player.body.setGravityY(3000)
+    player.body.setGravityY(0)
 
 
 
@@ -82,6 +128,18 @@ function create (){
         frameRate: 10,
         repeat: -1
     });
+
+    stars = this.physics.add.group({
+        key: 'star',
+        repeat: 11,
+        setXY: { x: 12, y: 0, stepX: 70 }
+    });
+    
+    stars.children.iterate(function (child) {
+    
+        child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+    
+    });
     // logo.setVelocity(100,50);
     // logo.setBounce(1, .98);
     // logo.setCollideWorldBounds(true);
@@ -93,16 +151,23 @@ function create (){
 }
 
 function update(time, delta){
-    let player_move_amt = 600
+    if( Loris.health <= 0 && gameRunning ){
+        gameOver()
+    }
+
+    
+    if (shakeTime > 0)
+    {
+        shakeTime -= delta;
+
+        this.cameras.main.shake(500);
+    }
+    let player_move_amt = 60
     if(angleKey.isDown){
         player.setAngularVelocity(400)
     }
     movePlayer(leftKey, rightKey, upKey, downKey, player_move_amt)
-    // Jump sample from phaser3 tutorial
-    // if (cursors.up.isDown && player.body.touching.down)
-    // {
-    //     player.setVelocityY(-330)
-    // }
+
     countdown-=delta;
     // countdown is done, but the change hasn't been done
     if(countdown <0 && !changed){
@@ -119,10 +184,18 @@ function update(time, delta){
 }
 }
 
+
+
 function moveObject( something, x, y){
     something.setVelocityX(x)
     something.setVelocityY(y)
 
+}
+
+function gameOver(){
+    shakeTime = 2000
+    gameRunning = false
+    console.log("ded")
 }
 
 function animateObject(something, x, y){
