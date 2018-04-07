@@ -19,3 +19,6 @@ Install
 `cd electron-loris`
 
 `npm install && npm start`
+
+## Controls
+Currenly this game is set up for left handed play using the ijkl keys.
