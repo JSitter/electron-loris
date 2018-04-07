@@ -16,4 +16,5 @@ Clone this repository
 
 Install
 `cd electron-loris`
+
 `npm install && start`
