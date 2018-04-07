@@ -10,8 +10,9 @@ Support for animated tiles in phaser 3
 This project is still in very early development. Everything you see will likely change from week to week.
 
 ## Installation
+This installation assumes you have npm and git installed on your computer.
 
-Clone this repository
+Clone this repository:
 `git clone https://github.com/JSitter/electron-loris.git`
 
 Install
