@@ -1,7 +1,8 @@
 //Trying to break these into separate file isn't working
 class Player{
     constructor(){
-        this.health = 100
+        this.starting_health = 100
+        this.health = this.starting_health
         this.x = 0
         this.y = 0
     }
@@ -12,8 +13,17 @@ class Player{
     }
 
     injure(damage){
+        updateHUD(damage * -1)
         this.health -= damage
     }
+
+    updateHUD(amount){
+        let bar_pixel_width = 80
+
+
+    }
+
+
 }
 
 class Mob{
@@ -49,7 +59,10 @@ var camera;
 var game = new Phaser.Game(config);
 var gameRunning = true
 
-
+gameScene.init = function(){
+    this.playerSpeed = 1.5
+    this.enemySpeed = 2
+}
 
 function preload (){
     
@@ -83,8 +96,10 @@ function create (){
     this.sys.animatedTiles.init(map);
 
     //Add Health Bar
+    
+    health_bottom = this.add.image(0,0, "pixel").setScrollFactor(0)
+    health_top = this.add.image(0,0, "pixel").setScrollFactor(0)
     this.add.image(0,0, "bar").setScrollFactor(0)
-    this.add.image(0,0, "pixel").setScrollFactor(0)
 
     // this.add.image(400, 300, 'board');
     // this.add.image(32, 48, 'red')
