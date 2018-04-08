@@ -36,35 +36,22 @@ class Mob{
     }
 }
 
-var config = {
-    type: Phaser.AUTO,
-    width: 800,
-    height: 800,
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 3 },
-            debug: false
-        }
-    },
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
-    }
-};
+// create a new scene named "One"
+let sceneOne = new Phaser.Scene('One');
+
+
 
 var map, waveTiles, groundTiles, waveLayer, groundLayer, countdown, changed;
 var camera;
-var game = new Phaser.Game(config);
+
 var gameRunning = true
 
-gameScene.init = function(){
+sceneOne.init = function(){
     this.playerSpeed = 1.5
     this.enemySpeed = 2
 }
 
-function preload (){
+sceneOne.preload = function(){
     
     this.load.plugin('AnimatedTiles', '../src/animated-tiles.js');
     this.load.setBaseURL('./assets/');
@@ -79,7 +66,7 @@ function preload (){
     console.log("preload finished")
 }
 var shakeTime = 0
-function create (){
+sceneOne.create = function(){
     //Create maps and Tilesets
     // Install animated tiles plugin
     this.sys.install('AnimatedTiles');
@@ -173,7 +160,7 @@ function create (){
     countdown = 5000;
 }
 
-function update(time, delta){
+sceneOne.update = function(time, delta){
     if( Loris.health <= 0 && gameRunning ){
         gameOver()
     }
@@ -277,3 +264,18 @@ function movePlayer(leftKey, rightKey, upKey , downKey, distance){
 
     
 }
+
+var config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 800,
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 3 },
+            debug: false
+        }
+    },
+    scene: sceneOne
+};
+var game = new Phaser.Game(config);
