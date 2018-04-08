@@ -17,11 +17,12 @@ class Player{
 }
 
 class Mob{
-    constructor(name, armor, health, damage){
+    constructor(name, armor, health, damage, cool_down){
         this.name = name
         this.armor = armor
         this.health = health
         this.damage = damage
+        this.cool_down = cool_down
     }
 }
 
@@ -161,7 +162,7 @@ function update(time, delta){
     if( Loris.health <= 0 && gameRunning ){
         gameOver()
     }
-    console.log(delta)
+
 
     if (shakeTime > 0)
     {
@@ -193,7 +194,7 @@ function update(time, delta){
 
 
 function dealDamage( obj_ary ){
-  for (var key in )
+  
 }
 
 function moveObject( something, x, y){
