@@ -57,6 +57,8 @@ function preload (){
     this.load.tilemapTiledJSON('map', 'sma-loris.json');
     this.load.image('ground_tiles', 'ground_tiles.png');
     this.load.image('beach_sand_woa3', 'beach_sand_woa3.png');
+    this.load.image('pixel', 'pixel.png')
+    this.load.image('bar', 'bar.png')
 
 
     this.load.spritesheet('loris', 'slow-loris.png', { frameWidth: 32, frameHeight: 48 });
@@ -64,11 +66,11 @@ function preload (){
 }
 var shakeTime = 0
 function create (){
+    //Create maps and Tilesets
     // Install animated tiles plugin
     this.sys.install('AnimatedTiles');
     map = this.make.tilemap({ key: 'map' });
     console.log(map)
-    
     groundTiles = map.addTilesetImage('avalon-ground', 'ground_tiles' )
     waveTiles = map.addTilesetImage('av-waves-3', 'beach_sand_woa3' )
     console.log("go fetch Avalon Ground tiles")
@@ -78,6 +80,10 @@ function create (){
     console.log("Charmed")
     // Init animations on map
     this.sys.animatedTiles.init(map);
+
+    //Add Health Bar
+    this.add.image(0,0, "bar").setScrollFactor(0)
+    this.add.image(0,0, "pixel").setScrollFactor(0)
 
     // this.add.image(400, 300, 'board');
     // this.add.image(32, 48, 'red')
@@ -91,6 +97,7 @@ function create (){
     downKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K)
     upKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I)
     angleKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
+    healthKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.H)
 
     player = this.physics.add.sprite(300, 150, 'loris');
     this.cameras.main.startFollow(player)
@@ -154,8 +161,8 @@ function update(time, delta){
     if( Loris.health <= 0 && gameRunning ){
         gameOver()
     }
+    console.log(delta)
 
-    
     if (shakeTime > 0)
     {
         shakeTime -= delta;
@@ -185,6 +192,9 @@ function update(time, delta){
 }
 
 
+function dealDamage( obj_ary ){
+  for (var key in )
+}
 
 function moveObject( something, x, y){
     something.setVelocityX(x)
