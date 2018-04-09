@@ -83,13 +83,22 @@ sceneOne.create = function(){
     this.sys.animatedTiles.init(map);
 
     //Add Health Bar
-    
-    health_bottom = this.add.image(0,0, "pixel").setScrollFactor(0)
-    health_top = this.add.image(0,0, "pixel").setScrollFactor(0)
-    this.add.image(0,0, "bar").setScrollFactor(0)
+    this.health_bottom = this.add.image(310, 40, 'pixel').setScrollFactor(0)
+    this.health_bottom.scaleX = 260
+    this.health_bottom.scaleY = 20
 
-    // this.add.image(400, 300, 'board');
-    // this.add.image(32, 48, 'red')
+    this.health_top = this.add.image(310, 40, 'pixel').setScrollFactor(0)
+    this.health_top.scaleX = 260
+    this.health_top.scaleY = 20
+    console.log("Health bar:")
+    
+    lebar = this.add.image(180,30, "bar").setScrollFactor(0)
+    lebar.scaleX = 3
+    lebar.scaleY = 2
+    console.log(this.health_top)
+
+    this.health_top.setTint(0xff0000)
+    //Add Cameras
     this.cameras.main.setSize(800, 800)
     console.log("Main Camera")
     console.log(this.cameras.main)
@@ -146,11 +155,13 @@ sceneOne.create = function(){
     //     setXY: { x: 12, y: 0, stepX: 70 }
     // });
     
-    stars.children.iterate(function (child) {
+    // stars.children.iterate(function (child) {
     
-        child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+    //     child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
     
-    });
+    // });
+
+
     // logo.setVelocity(100,50);
     // logo.setBounce(1, .98);
     // logo.setCollideWorldBounds(true);
@@ -165,7 +176,16 @@ sceneOne.update = function(time, delta){
     if( Loris.health <= 0 && gameRunning ){
         gameOver()
     }
-
+    // this.health_bottom.scaleX = 7000
+    // this.health_bottom.scaleY =1000
+    
+    // health_bottom.scale.y = 10
+    // health_top.scaleMode = 1
+    // health_bottom.name = "health_bottom"
+    // health_top.name = "health_top"
+    // health_top.width = 70
+    // health_top.height = 10
+    
 
     if (shakeTime > 0)
     {
