@@ -83,12 +83,14 @@ sceneOne.create = function(){
     this.sys.animatedTiles.init(map);
 
     //Add Health Bar
-    this.health_bottom = this.add.image(310, 40, 'pixel').setScrollFactor(0)
-    this.health_bottom.scaleX = 260
+    this.health_bottom = this.add.image(50, 40, 'pixel').setScrollFactor(0)
+    this.health_bottom.scaleX = -260
     this.health_bottom.scaleY = 20
 
-    this.health_top = this.add.image(310, 40, 'pixel').setScrollFactor(0)
-    this.health_top.scaleX = 260
+    this.health_top = this.add.image(50, 40, 'pixel').setScrollFactor(0)
+    console.log("health image")
+    console.log(this.health_top)
+    this.health_top.scaleX = -260
     this.health_top.scaleY = 20
     console.log("Health bar:")
     
