@@ -27,9 +27,9 @@ class Player{
 }
 
 class Mob{
-    constructor(name, armor, health, damage, cool_down){
+    constructor(sprite, name, health, damage, cool_down){
+        this.sprite = sprite
         this.name = name
-        this.armor = armor
         this.health = health
         this.damage = damage
         this.cool_down = cool_down
@@ -238,28 +238,28 @@ function playerAnims(animation){
     animation.create({
         key: 'player-left',
         frames: animation.generateFrameNumbers('loris', { start: 3, end: 5 }),
-        frameRate: 10,
+        frameRate: 5,
         repeat: -1
     });
 
     animation.create({
         key: 'player-right',
         frames: animation.generateFrameNumbers('loris', { start: 6, end: 8 }),
-        frameRate: 10,
+        frameRate: 5,
         repeat: -1
     });
 
     animation.create({
         key: 'player-up',
         frames: animation.generateFrameNumbers('loris', { start: 9, end: 11 }),
-        frameRate: 10,
+        frameRate: 5,
         repeat: -1
     });
 
     animation.create({
         key: 'player-down',
         frames: animation.generateFrameNumbers('loris', { start: 0, end: 2 }),
-        frameRate: 10,
+        frameRate: 5,
         repeat: -1
     });
 
