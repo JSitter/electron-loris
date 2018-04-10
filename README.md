@@ -4,7 +4,7 @@
 This project implements the phaser 3 game engine into GitHub's Electron framework to provide a cross platform experience.
 
 ## Animated Tiles
-Support for animated tiles in phaser 3
+Support for animated tiles in phaser 3 is added with animated tiles. However this feature is currently a work in progress.
 
 ## Development Notice
 This project is still in very early development. Everything you see will likely change from week to week.
