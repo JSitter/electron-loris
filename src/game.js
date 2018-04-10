@@ -60,6 +60,7 @@ sceneOne.preload = function(){
     this.load.image('beach_sand_woa3', 'beach_sand_woa3.png');
     this.load.image('pixel', 'pixel.png')
     this.load.image('bar', 'bar.png')
+    this.lastPress = false
 
 
     this.load.spritesheet('loris', 'loris-sprite.png', { frameWidth: 45, frameHeight: 45 });
@@ -67,6 +68,7 @@ sceneOne.preload = function(){
     console.log("preload finished")
 }
 var shakeTime = 0
+
 sceneOne.create = function(){
     //Create maps and Tilesets
     // Install animated tiles plugin
@@ -198,6 +200,7 @@ sceneOne.update = function(time, delta){
         // Ok. don't hammer tiles on each update-loop. the change is done.
         changed = true;
 }
+
 }
 
 function wolfAnims(animation){
@@ -234,30 +237,51 @@ function wolfAnims(animation){
 function playerAnims(animation){
     animation.create({
         key: 'player-left',
-        frames: animation.generateFrameNumbers('loris', { start: 4, end: 6 }),
+        frames: animation.generateFrameNumbers('loris', { start: 3, end: 5 }),
         frameRate: 10,
         repeat: -1
     });
 
     animation.create({
         key: 'player-right',
-        frames: animation.generateFrameNumbers('loris', { start: 7, end: 9 }),
+        frames: animation.generateFrameNumbers('loris', { start: 6, end: 8 }),
         frameRate: 10,
         repeat: -1
     });
 
     animation.create({
         key: 'player-up',
-        frames: animation.generateFrameNumbers('loris', { start: 10, end: 12 }),
+        frames: animation.generateFrameNumbers('loris', { start: 9, end: 11 }),
         frameRate: 10,
         repeat: -1
     });
 
     animation.create({
         key: 'player-down',
-        frames: animation.generateFrameNumbers('loris', { start: 1, end: 3 }),
+        frames: animation.generateFrameNumbers('loris', { start: 0, end: 2 }),
         frameRate: 10,
         repeat: -1
+    });
+
+    animation.create({
+        key: 'player-down-stop',
+        frames: [ { key: 'loris', frame: 0 } ],
+        frameRate: 20
+    });
+    animation.create({
+        key: 'player-up-stop',
+        frames: [ { key: 'loris', frame: 9 } ],
+        frameRate: 20
+    });
+    animation.create({
+        key: 'player-left-stop',
+        frames: [ { key: 'loris', frame: 3 } ],
+        frameRate: 20
+    });
+    animation.create({
+        key: 'player-right-stop',
+        frames: [ { key: 'loris', frame: 6 } ],
+        frameRate: 20
     });
 }
 
@@ -313,22 +337,37 @@ function animateObject(something, x, y){
 function movePlayer(leftKey, rightKey, upKey , downKey, distance){
     x = 0
     y = 0
+    
 
     if (leftKey.isDown){
         x -= distance
-        player.anims.play("player-left")
-    }
-    if (rightKey.isDown){
+        this.player.anims.play("player-left", true)
+        this.lastPress = "left"
+
+    }else if (rightKey.isDown){
         x += distance
-        player.anims.play("player-right")
+        this.player.anims.play("player-right", true)
+        this.lastPress = "right"
     }
-    if (upKey.isDown){
+    else if (upKey.isDown){
         y -= distance
-        player.anims.play("player-down")
+        this.player.anims.play("player-up", true)
+        this.lastPress = "up"
+        
     }
-    if(downKey.isDown){
+    else if(downKey.isDown){
         y += distance
-        player.anims.play("player-up")
+        player.anims.play("player-down", true)
+        this.lastPress = "down"
+    }else{
+        if(this.lastPress){
+            animation = "player-"+this.lastPress+"-stop"
+
+        }else{
+            animation = "player-up-stop"
+        }
+        player.anims.play(animation, true)
+        
     }
     moveObject(player, x, y)
 
