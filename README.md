@@ -12,14 +12,12 @@ This project is still in very early development. Everything you see will likely 
 ## Installation
 This installation assumes you have npm and git installed on your computer.
 
-Clone this repository:
+Install:
 `git clone https://github.com/JSitter/electron-loris.git`
-
-Install
 
 `cd electron-loris`
 
 `npm install && npm start`
 
 ## Controls
-Currenly this game is set up for left handed play using the ijkl keys.
+Currenly this game is set up for left handed play using the ijkl keys for movement.
