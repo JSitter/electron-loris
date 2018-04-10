@@ -62,7 +62,8 @@ sceneOne.preload = function(){
     this.load.image('bar', 'bar.png')
 
 
-    this.load.spritesheet('loris', 'slow-loris.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.spritesheet('loris', 'loris-sprite.png', { frameWidth: 45, frameHeight: 45 });
+    this.load.spritesheet('wolf', 'betterwolfsprite.png', {frameWidth: 70, frameHeight: 70})
     console.log("preload finished")
 }
 var shakeTime = 0
@@ -127,28 +128,10 @@ sceneOne.create = function(){
     player.setCollideWorldBounds(true);
     player.body.setGravityY(0)
 
+    //Create Mob
 
-
-
-    this.anims.create({
-        key: 'left',
-        frames: this.anims.generateFrameNumbers('loris', { start: 0, end: 3 }),
-        frameRate: 10,
-        repeat: -1
-    });
-
-    this.anims.create({
-        key: 'turn',
-        frames: [ { key: 'loris', frame: 4 } ],
-        frameRate: 20
-    });
-
-    this.anims.create({
-        key: 'right',
-        frames: this.anims.generateFrameNumbers('loris', { start: 5, end: 8 }),
-        frameRate: 10,
-        repeat: -1
-    });
+    wolfAnims(this.anims)
+    playerAnims(this.anims)
 
     //  Example for adding sprites
     // stars = this.physics.add.group({
@@ -217,6 +200,66 @@ sceneOne.update = function(time, delta){
 }
 }
 
+function wolfAnims(animation){
+    animation.create({
+        key: 'wolf-walk-left',
+        frames: animation.generateFrameNumbers('wolf', { start: 14, end: 18 }),
+        frameRate: 10,
+        repeat: -1
+    });
+
+    animation.create({
+        key: 'wolf-walk-right',
+        frames: animation.generateFrameNumbers('wolf', { start: 1, end: 5 }),
+        frameRate: 10,
+        repeat: -1
+    });
+
+    animation.create({
+        key: 'wolf-walk-down',
+        frames: animation.generateFrameNumbers('wolf', { start: 6, end: 9 }),
+        frameRate: 10,
+        repeat: -1
+    });
+
+    animation.create({
+        key: 'wolf-walk-up',
+        frames: animation.generateFrameNumbers('wolf', { start: 19, end: 22 }),
+        frameRate: 10,
+        repeat: -1
+    });
+
+}
+
+function playerAnims(animation){
+    animation.create({
+        key: 'player-left',
+        frames: animation.generateFrameNumbers('loris', { start: 4, end: 6 }),
+        frameRate: 10,
+        repeat: -1
+    });
+
+    animation.create({
+        key: 'player-right',
+        frames: animation.generateFrameNumbers('loris', { start: 7, end: 9 }),
+        frameRate: 10,
+        repeat: -1
+    });
+
+    animation.create({
+        key: 'player-up',
+        frames: animation.generateFrameNumbers('loris', { start: 10, end: 12 }),
+        frameRate: 10,
+        repeat: -1
+    });
+
+    animation.create({
+        key: 'player-down',
+        frames: animation.generateFrameNumbers('loris', { start: 1, end: 3 }),
+        frameRate: 10,
+        repeat: -1
+    });
+}
 
 function dealDamage( obj_ary ){
   
@@ -273,19 +316,26 @@ function movePlayer(leftKey, rightKey, upKey , downKey, distance){
 
     if (leftKey.isDown){
         x -= distance
+        player.anims.play("player-left")
     }
     if (rightKey.isDown){
         x += distance
+        player.anims.play("player-right")
     }
     if (upKey.isDown){
         y -= distance
+        player.anims.play("player-down")
     }
     if(downKey.isDown){
         y += distance
+        player.anims.play("player-up")
     }
     moveObject(player, x, y)
 
-    
+}
+
+function moveWolf(mob, x, y){
+
 }
 
 var config = {
