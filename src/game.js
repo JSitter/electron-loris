@@ -54,20 +54,24 @@ class Mob{
 }
 
 class dungeonMaster{
-    constructor(name, num_mobs, spawn_period){
+    constructor(name, num_mobs, spawn_period, sprite_lever){
         //Spawn Period is in time minutes
         this.name = name
         this.num_mobs = num_mobs
         this.spawn_period = spawn_period
         this.creation_time = false
         this.mob_box = []
-        while( len(this.mob_box) < num_mobs){
+        this.sprite_lever = sprite_lever
+        while( this.mob_box.length  < num_mobs){
             this.spawn_mob("wolf", 10)
         }
     }
 
     tick(time, delta){
-        this.mob_roll(time)
+        if(this.mob_box.length<this.num_mobs){
+            this.mob_roll(time)
+        }
+       
     }
 
     mob_roll(time, delta){
@@ -80,15 +84,15 @@ class dungeonMaster{
     }
 
     spawn_mob(mob_name, health){
-        coords = this.get_spawn_coord()
-        mob = this.physics.add.sprite(coords.x, coords.y, mob_name);
-        mobby = new Mob(mob, mob_name, health)
-        this.mob_box.append(mobby)
+        let coords = this.get_spawn_coord()
+        let mob = this.sprite_lever.sprite(coords.x, coords.y, mob_name);
+        let mobby = new Mob(mob, mob_name, health)
+        this.mob_box.push(mobby)
     }
 
     get_spawn_coord(){
-        coords = [{x:200, y:299},{x:100, y:199},{x:140, y:399}]
-        return coords[Math.floor(Math.random()*items.length)]
+        let coords = [{x:200, y:299},{x:100, y:199},{x:140, y:399}]
+        return coords[Math.floor(Math.random()*coords.length)]
     }
 
 }
@@ -182,7 +186,7 @@ sceneOne.create = function(){
     Loris = new Player()
 
     //Create Dungeon Master
-    this.DM = new dungeonMaster("wolf", 3, 6*60*60*1000)
+    this.DM = new dungeonMaster("wolf", 3, 7, this.physics.add)
 
     player.setBounce(0.2);
     console.log("Game Object:")
