@@ -80,12 +80,16 @@ class dungeonMaster{
     }
 
     spawn_mob(mob_name, health){
-        coords = this.get_spawn_coord
-        mob = this.physics.add.sprite(300, 150, mob_name);
+        coords = this.get_spawn_coord()
+        mob = this.physics.add.sprite(coords.x, coords.y, mob_name);
         mobby = new Mob(mob, mob_name, health)
         this.mob_box.append(mobby)
     }
 
+    get_spawn_coord(){
+        coords = [{x:200, y:299},{x:100, y:199},{x:140, y:399}]
+        return coords[Math.floor(Math.random()*items.length)]
+    }
 
 }
 
