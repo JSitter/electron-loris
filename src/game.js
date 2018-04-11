@@ -86,6 +86,7 @@ class dungeonMaster{
     spawn_mob(mob_name, health){
         let coords = this.get_spawn_coord()
         let mob = this.sprite_lever.sprite(coords.x, coords.y, mob_name);
+
         let mobby = new Mob(mob, mob_name, health)
         this.mob_box.push(mobby)
     }
@@ -450,7 +451,7 @@ var config = {
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 3 },
+            gravity: { y: 0 },
             debug: false
         }
     },
