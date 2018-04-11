@@ -38,18 +38,36 @@ class Mob{
         this.x = 0
         this.y = 0
         this.target = false
+        this.player = false
 
 
     }
     injure(damage){
         this.health -= damage
         if( this.health <=0){
-            this._death_sequence()
+            this._deathSequence()
         }
         return this.health
     }
-    _death_sequence(){
+    _deathSequence(){
         sprite.anims.play(this.name+'-death-'+this.direction)
+    }
+
+    tick(hostileLocation){
+        if(hostileLocation){
+            attackHostile(hostileLocation)
+        }else{
+            this.mobStuff()
+        }
+
+    }
+    mobStuff(){
+        console.log(this.name + " stuffz")
+    }
+
+    attackHostile(location){
+        console.log("ATTACKZ LOCAZHUN!")
+        console.log(location)
     }
 }
 
@@ -70,6 +88,9 @@ class dungeonMaster{
     tick(time, delta){
         if(this.mob_box.length<this.num_mobs){
             this.mob_roll(time)
+        }
+        for( var index in this.mob_box){
+            this.mob_box[index].tick()
         }
        
     }
@@ -93,6 +114,7 @@ class dungeonMaster{
 
     get_spawn_coord(){
         let coords = [{x:200, y:299},{x:100, y:199},{x:140, y:399}]
+        //return random coordinate
         return coords[Math.floor(Math.random()*coords.length)]
     }
 
@@ -101,8 +123,9 @@ class dungeonMaster{
 
 
 // create a new scene named "One"
-let sceneOne = new Phaser.Scene('One');
+let sceneOne = new this.Phaser.Scene('One');
 
+let Finder = new EasyStar.js()
 
 
 var map, waveTiles, groundTiles, waveLayer, groundLayer, countdown, changed;
@@ -148,6 +171,9 @@ sceneOne.create = function(){
     console.log("Charmed")
     // Init animations on map
     this.sys.animatedTiles.init(map);
+
+    //EasyStar Pathfinding library
+    
 
     //Add Health Bar
     this.health_bottom = this.add.image(50, 40, 'pixel').setScrollFactor(0)
@@ -252,7 +278,9 @@ sceneOne.update = function(time, delta){
         player.setAngularVelocity(400)
     }
     movePlayer(leftKey, rightKey, upKey, downKey, player_move_amt)
+    this.DM.tick()
 
+    //This is for animated tiles
     countdown-=delta;
     // countdown is done, but the change hasn't been done
     if(countdown <0 && !changed){
