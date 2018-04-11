@@ -1,7 +1,8 @@
 //Trying to break these into separate file isn't working
 class Player{
-    constructor(){
+    constructor(sprite){
         this.starting_health = 100
+        this.cooldown = 2000
         this.health = this.starting_health
         this.x = 0
         this.y = 0
@@ -20,21 +21,75 @@ class Player{
     updateHUD(amount){
         let bar_pixel_width = 80
 
-
     }
 
 
 }
 
 class Mob{
-    constructor(sprite, name, health, damage, cool_down){
+    constructor(sprite, name, health, damage, cool_down, id){
+        this.id = id
         this.sprite = sprite
         this.name = name
         this.health = health
         this.damage = damage
         this.cool_down = cool_down
+        this.direction = "left"
+        this.x = 0
+        this.y = 0
+        this.target = false
+
+
+    }
+    injure(damage){
+        this.health -= damage
+        if( this.health <=0){
+            this._death_sequence()
+        }
+        return this.health
+    }
+    _death_sequence(){
+        sprite.anims.play(this.name+'-death-'+this.direction)
     }
 }
+
+class dungeonMaster{
+    constructor(name, num_mobs, spawn_period){
+        //Spawn Period is in time minutes
+        this.name = name
+        this.num_mobs = num_mobs
+        this.spawn_period = spawn_period
+        this.creation_time = false
+        this.mob_box = []
+        while( len(this.mob_box) < num_mobs){
+            this.spawn_mob("wolf", 10)
+        }
+    }
+
+    tick(time, delta){
+        this.mob_roll(time)
+    }
+
+    mob_roll(time, delta){
+        roll = Math.random(time)
+        mob_prob = (delta/ this.spawn_period * 60000)
+        if(roll <= mob_prob){
+            //spawn mob
+            this.spawn_mob('wolf', 10)
+        }
+    }
+
+    spawn_mob(mob_name, health){
+        coords = this.get_spawn_coord
+        mob = this.physics.add.sprite(300, 150, mob_name);
+        mobby = new Mob(mob, mob_name, health)
+        this.mob_box.append(mobby)
+    }
+
+
+}
+
+
 
 // create a new scene named "One"
 let sceneOne = new Phaser.Scene('One');
@@ -121,6 +176,9 @@ sceneOne.create = function(){
     console.log("Player object:")
     console.log(player)
     Loris = new Player()
+
+    //Create Dungeon Master
+    this.DM = new dungeonMaster("wolf", 3, 6*60*60*1000)
 
     player.setBounce(0.2);
     console.log("Game Object:")
