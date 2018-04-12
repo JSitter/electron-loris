@@ -27,21 +27,22 @@ class Player{
 }
 
 class Mob{
-    constructor(sprite, name, health, damage, cool_down, id, path_finder){
-        this.id = id
+    constructor(sprite, name, health, damage, cool_down, path_finder){
+
         this.sprite = sprite
         this.name = name
         this.health = health
         this.damage = damage
         this.cool_down = cool_down
         this.direction = "left"
-        this.x = 0
-        this.y = 0
+        this.x = sprite.x
+        this.y = sprite.y
         this.target = false
         this.player = false
         this.last_time = 0
         this.Finder = path_finder
 
+        console.log(name + " spawned")
 
     }
     injure(damage){
@@ -90,10 +91,12 @@ class Mob{
         }
         this.sprite.anims.play(this.name+'-stop-'+this.direction)
     }
-    explore(){
+
+    randomWalkCoord(){
+        console.log(this.name + " choosing point")
+        let valid_point = false
         let signProb = Math.random()
-        console.log("sign prob")
-        console.log(signProb)
+        //determine direction
         let x_direction
         let y_direction
         if(signProb < .25){
@@ -110,12 +113,34 @@ class Mob{
             y_direction = 1
         }
 
-        let random_x =  (20 + (30)*Math.random()) * x_direction  // num is random integer, from 20 to 30 
-        let random_y =  (20 + (30)*Math.random() ) * y_direction
-        let abs_x = this.x + random_x
-        let abs_y = this.y + random_y
+        //Randomly choose valid point
+        while(!valid_point){
+            let random_x =  (20 + (30)*Math.random()) * x_direction  // num is random integer, from 20 to 30 
+            let random_y =  (20 + (30)*Math.random() ) * y_direction
+            var abs_x = this.x + random_x
+            var abs_y = this.y + random_y
+
+            if((abs_x >= 0) && (abs_y >= 0)){
+                valid_point = true
+                
+            }
+        }
+        return {
+            x: abs_x,
+            y: abs_y
+        }
+
+        
+    }
+
+    explore(){
         console.log(this.name + " exploring things")
-        this.computePath(random_x, random_y)
+
+
+
+
+        let coord = this.randomWalkCoord()
+        this.computePath(coord.x, coord.y)
         
 
     }
@@ -123,16 +148,18 @@ class Mob{
     computePath(abs_x, abs_y){
         let fromX = Math.floor(this.x / 32)
         let fromY = Math.floor(this.y / 32)
-        let toX = Math.floor(x/32)
-        let toY = Math.floor(y/32)
-        
+        let toX = Math.floor(abs_x/32)
+        let toY = Math.floor(abs_y/32)
+        let that = this
+        console.log("Computing path:")
+        console.log(String(abs_x) + " " + String(abs_y))
         try{
             this.Finder.findPath(fromX, fromY,toX, toY, function( path ) {
                 if (path === null) {
                     console.warn("Path was not found.");
                 } else {
                     console.log(path)
-                    this.move(path);
+                    that.move(path);
                 }
             });
             this.Finder.calculate();
@@ -144,6 +171,7 @@ class Mob{
 
     move(path){
         //move to path
+        console.log("Path found:")
         console.log(path);
     }
 
@@ -190,7 +218,7 @@ class dungeonMaster{
     spawn_mob(mob_name, health){
         let coords = this.get_spawn_coord()
         let mob = this.sprite_lever.sprite(coords.x, coords.y, mob_name);
-        let mobby = new Mob(mob, mob_name, health, 10, 2000, "nimrod", this.Finder)
+        let mobby = new Mob(mob, mob_name, health, 10, 2000, this.Finder)
         this.mob_box.push(mobby)
     }
 
@@ -261,11 +289,13 @@ sceneOne.create = function(){
     // console.log(groundTiles.tileProperties)
     // console.log("ground layer index at...blah")
     // console.log(groundLayer.getTileAt(4,5, true).index)
+
+    
     grid = createGrid(groundLayer)
     let acceptableTiles = getAcceptableTiles(groundTiles, this.Finder)
+
     this.Finder.setAcceptableTiles(acceptableTiles);
     this.Finder.setGrid(grid)
-
 
     //Add Health Bar
     this.health_bottom = this.add.image(50, 40, 'pixel').setScrollFactor(0)
@@ -393,19 +423,22 @@ sceneOne.update = function(time, delta){
 
 function getAcceptableTiles(tileset, pathfinderObj){
     //This function will work on maps and tilesets
-    let properties = tileset.tileProperties;
+    let properties = tileset.tileProperties
 
-    var acceptableTiles = [];
+    var acceptableTiles = []
 
     for(var i = tileset.firstgid-1; i < tileset.total; i++){ // firstgid and total are fields from Tiled that indicate the range of IDs that the tiles can take in that tileset
             if(!properties.hasOwnProperty(i)) {
                 // If there is no property indicated at all, it means it's a walkable tile
-                acceptableTiles.push(i+1);
+                acceptableTiles.push(i+1)
                 continue;
             }
-            if(!properties[i].collide) acceptableTiles.push(i+1);
-            if(properties[i].cost) pathfinderObj.setTileCost(i+1, properties[i].cost); // If there is a cost attached to the tile, let's register it
+            if(!properties[i].collide) acceptableTiles.push(i+1)
+            if(properties[i].cost) pathfinderObj.setTileCost(i+1, properties[i].cost) // If there is a cost attached to the tile, let's register it
         }
+    console.log("Acceptable tiles")
+    // console.log(acceptableTiles)
+    return acceptableTiles
 }
 
 function wolfAnims(animation){
