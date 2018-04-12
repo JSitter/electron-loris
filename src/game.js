@@ -27,7 +27,7 @@ class Player{
 }
 
 class Mob{
-    constructor(sprite, name, health, damage, cool_down, id){
+    constructor(sprite, name, health, damage, cool_down, id, path_finder){
         this.id = id
         this.sprite = sprite
         this.name = name
@@ -40,6 +40,7 @@ class Mob{
         this.target = false
         this.player = false
         this.last_time = 0
+        this.Finder = path_finder
 
 
     }
@@ -64,7 +65,7 @@ class Mob{
     }
     mobStuff(time){
         
-        let mill_pause = 3000
+        let mill_pause = 30
         if((time - mill_pause)>=this.last_time){
             this.last_time = time
             if(Math.random()<.1){
@@ -90,13 +91,54 @@ class Mob{
         this.sprite.anims.play(this.name+'-stop-'+this.direction)
     }
     explore(){
-        let random_x =  2 + (2)*Math.random()  // num is random integer, from 2 to 4 
-        let random_y =  2 + (2)*Math.random() 
+        let signProb = Math.random()
+        console.log("sign prob")
+        console.log(signProb)
+        let x_direction
+        let y_direction
+        if(signProb < .25){
+            x_direction = -1
+            y_direction = -1
+        }else if(signProb < .5){
+            x_direction = -1
+            y_direction = 1
+        }else if(signProb<.75){
+            x_direction = 1
+            y_direction = -1
+        }else{
+            x_direction = 1
+            y_direction = 1
+        }
+
+        let random_x =  (20 + (30)*Math.random()) * x_direction  // num is random integer, from 20 to 30 
+        let random_y =  (20 + (30)*Math.random() ) * y_direction
+        let abs_x = this.x + random_x
+        let abs_y = this.y + random_y
         console.log(this.name + " exploring things")
-        let x_pos = Math.floor(this.x / 32)
-        let y_pos = Math.floor(this.y / 32)
+        this.computePath(random_x, random_y)
         
 
+    }
+
+    computePath(abs_x, abs_y){
+        let fromX = Math.floor(this.x / 32)
+        let fromY = Math.floor(this.y / 32)
+        let toX = Math.floor(x/32)
+        let toY = Math.floor(y/32)
+        this.Finder.findPath(fromX, fromY,toX, toY, function( path ) {
+            if (path === null) {
+                console.warn("Path was not found.");
+            } else {
+                console.log(path)
+                this.move(path);
+            }
+        });
+        this.Finder.calculate();
+    }
+
+    move(path){
+        //move to path
+        console.log(path);
     }
 
     attackHostile(location){
@@ -106,7 +148,7 @@ class Mob{
 }
 
 class dungeonMaster{
-    constructor(name, num_mobs, spawn_period, sprite_lever){
+    constructor(name, num_mobs, spawn_period, sprite_lever, path_finder){
         //Spawn Period is in time minutes
         this.name = name
         this.num_mobs = num_mobs
@@ -114,6 +156,7 @@ class dungeonMaster{
         this.creation_time = false
         this.mob_box = []
         this.sprite_lever = sprite_lever
+        this.Finder = path_finder
         while( this.mob_box.length  < num_mobs){
             this.spawn_mob("wolf", 10)
         }
@@ -141,8 +184,7 @@ class dungeonMaster{
     spawn_mob(mob_name, health){
         let coords = this.get_spawn_coord()
         let mob = this.sprite_lever.sprite(coords.x, coords.y, mob_name);
-
-        let mobby = new Mob(mob, mob_name, health)
+        let mobby = new Mob(mob, mob_name, health, 10, 2000, "nimrod", this.Finder)
         this.mob_box.push(mobby)
     }
 
@@ -203,35 +245,19 @@ sceneOne.create = function(){
     console.log(groundTiles)
     groundLayer = map.createDynamicLayer('Base', groundTiles, 0, 0);
     waveLayer = map.createDynamicLayer('waves', waveTiles, 0, 0);
-    // console.log("ground layer index at...blah")
-    // console.log(groundLayer.getTileAt(4,5, true).index)
-    console.log("Charmed")
+
+    console.log("Charmed - Animated Tiles ")
     // Init animations on map
-    // this.sys.animatedTiles.init(map);
+    this.sys.animatedTiles.init(map);
     
     //EasyStar Pathfinding library
+    // console.log("properties")
+    // console.log(groundTiles.tileProperties)
+    // console.log("ground layer index at...blah")
+    // console.log(groundLayer.getTileAt(4,5, true).index)
     grid = createGrid(groundLayer)
-    console.log("properties")
-    console.log(groundTiles.tileProperties)
-
-    var properties = groundTiles.tileProperties;
-
-    var acceptableTiles = [];
-
-    for(var i = groundTiles.firstgid-1; i < groundTiles.total; i++){ // firstgid and total are fields from Tiled that indicate the range of IDs that the tiles can take in that tileset
-            if(!properties.hasOwnProperty(i)) {
-                // If there is no property indicated at all, it means it's a walkable tile
-                acceptableTiles.push(i+1);
-                continue;
-            }
-            if(!properties[i].collide) acceptableTiles.push(i+1);
-            if(properties[i].cost) this.Finder.setTileCost(i+1, properties[i].cost); // If there is a cost attached to the tile, let's register it
-        }
+    let acceptableTiles = getAcceptableTiles(groundTiles, this.Finder)
     this.Finder.setAcceptableTiles(acceptableTiles);
-
-    //this.Finder.setGrid(grid)
-    // console.log("Finder...")
-    // console.log(this.Finder)
     this.Finder.setGrid(grid)
 
 
@@ -273,7 +299,7 @@ sceneOne.create = function(){
     Loris = new Player()
 
     //Create Dungeon Master
-    this.DM = new dungeonMaster("wolf", 4, 7, this.physics.add)
+    this.DM = new dungeonMaster("wolf", 4, 7, this.physics.add, this.Finder)
 
     player.setBounce(0.2);
     console.log("Game Object:")
@@ -344,6 +370,7 @@ sceneOne.update = function(time, delta){
     countdown-=delta;
     // countdown is done, but the change hasn't been done
     if(countdown <0 && !changed){
+        console.log("log T")
         // Native API-method to fill area with tiles
         // layer3.fill(1525, 1, 1, 3, 3);
         // Need to tell the plugin about the new tiles.
@@ -356,6 +383,23 @@ sceneOne.update = function(time, delta){
         changed = true;
 }
 
+}
+
+function getAcceptableTiles(tileset, pathfinderObj){
+    //This function will work on maps and tilesets
+    let properties = tileset.tileProperties;
+
+    var acceptableTiles = [];
+
+    for(var i = tileset.firstgid-1; i < tileset.total; i++){ // firstgid and total are fields from Tiled that indicate the range of IDs that the tiles can take in that tileset
+            if(!properties.hasOwnProperty(i)) {
+                // If there is no property indicated at all, it means it's a walkable tile
+                acceptableTiles.push(i+1);
+                continue;
+            }
+            if(!properties[i].collide) acceptableTiles.push(i+1);
+            if(properties[i].cost) pathfinderObj.setTileCost(i+1, properties[i].cost); // If there is a cost attached to the tile, let's register it
+        }
 }
 
 function wolfAnims(animation){
