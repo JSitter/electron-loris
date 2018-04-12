@@ -76,7 +76,7 @@ class Mob{
         }
     }
     turnRandom(){
-        console.log("Turning!")
+        console.log(this.name + " turning!")
         let rand = Math.random()
         if(rand < .25){
             this.direction = "up"
@@ -92,7 +92,7 @@ class Mob{
     explore(){
         let random_x =  2 + (2)*Math.random()  // num is random integer, from 2 to 4 
         let random_y =  2 + (2)*Math.random() 
-        console.log("Exploring things")
+        console.log(this.name + " exploring things")
         let x_pos = Math.floor(this.x / 32)
         let y_pos = Math.floor(this.y / 32)
         
