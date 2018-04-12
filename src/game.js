@@ -161,6 +161,7 @@ sceneOne.create = function(){
     // Install animated tiles plugin
     this.sys.install('AnimatedTiles');
     map = this.make.tilemap({ key: 'map' });
+    console.log("Map Object")
     console.log(map)
     groundTiles = map.addTilesetImage('avalon-ground', 'ground_tiles' )
     waveTiles = map.addTilesetImage('av-waves-3', 'beach_sand_woa3' )
@@ -168,12 +169,14 @@ sceneOne.create = function(){
     console.log(groundTiles)
     groundLayer = map.createDynamicLayer('Base', groundTiles, 0, 0);
     waveLayer = map.createDynamicLayer('waves', waveTiles, 0, 0);
+    console.log("ground layer at...blah")
+    console.log(groundLayer.getTileAt(4,5, true).index)
     console.log("Charmed")
     // Init animations on map
-    this.sys.animatedTiles.init(map);
+    // this.sys.animatedTiles.init(map);
 
     //EasyStar Pathfinding library
-    
+    // grid = createGrid(map, this)
 
     //Add Health Bar
     this.health_bottom = this.add.image(50, 40, 'pixel').setScrollFactor(0)
@@ -465,6 +468,21 @@ function movePlayer(leftKey, rightKey, upKey , downKey, distance){
         
     }
     moveObject(player, x, y)
+
+}
+
+function createGrid(map, game){
+    var grid = [];
+    for(var y = 0; y < map.height; y++){
+        var col = [];
+        for(var x = 0; x < map.width; x++){
+            // In each cell we store the ID of the tile, which corresponds
+            // to its index in the tileset of the map ("ID" field in Tiled)
+            col.push(game.getTileID(x,y));
+        }
+        grid.push(col);
+    }
+    return grid
 
 }
 
