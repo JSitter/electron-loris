@@ -113,7 +113,7 @@ class dungeonMaster{
     }
 
     get_spawn_coord(){
-        let coords = [{x:200, y:299},{x:100, y:199},{x:140, y:399}]
+        let coords = [{x:200, y:299},{x:100, y:199},{x:140, y:399}, {x:465, y:10}, {x:600, y:500}, {x:560, y:467}]
         //return random coordinate
         return coords[Math.floor(Math.random()*coords.length)]
     }
@@ -125,7 +125,7 @@ class dungeonMaster{
 // create a new scene named "One"
 let sceneOne = new this.Phaser.Scene('One');
 
-let Finder = new EasyStar.js()
+
 
 
 var map, waveTiles, groundTiles, waveLayer, groundLayer, countdown, changed;
@@ -148,7 +148,7 @@ sceneOne.preload = function(){
     this.load.image('pixel', 'pixel.png')
     this.load.image('bar', 'bar.png')
     this.lastPress = false
-
+    this.Finder = new EasyStar.js()
 
     this.load.spritesheet('loris', 'loris-sprite.png', { frameWidth: 45, frameHeight: 45 });
     this.load.spritesheet('wolf', 'betterwolfsprite.png', {frameWidth: 70, frameHeight: 70})
@@ -169,14 +169,19 @@ sceneOne.create = function(){
     console.log(groundTiles)
     groundLayer = map.createDynamicLayer('Base', groundTiles, 0, 0);
     waveLayer = map.createDynamicLayer('waves', waveTiles, 0, 0);
-    console.log("ground layer at...blah")
-    console.log(groundLayer.getTileAt(4,5, true).index)
+    // console.log("ground layer index at...blah")
+    // console.log(groundLayer.getTileAt(4,5, true).index)
     console.log("Charmed")
     // Init animations on map
     // this.sys.animatedTiles.init(map);
-
+    
     //EasyStar Pathfinding library
-    // grid = createGrid(map, this)
+    grid = createGrid(groundLayer)
+    //this.Finder.setGrid(grid)
+    // console.log("Finder...")
+    // console.log(this.Finder)
+    this.Finder.setGrid(grid)
+
 
     //Add Health Bar
     this.health_bottom = this.add.image(50, 40, 'pixel').setScrollFactor(0)
@@ -216,7 +221,7 @@ sceneOne.create = function(){
     Loris = new Player()
 
     //Create Dungeon Master
-    this.DM = new dungeonMaster("wolf", 3, 7, this.physics.add)
+    this.DM = new dungeonMaster("wolf", 4, 7, this.physics.add)
 
     player.setBounce(0.2);
     console.log("Game Object:")
@@ -471,14 +476,16 @@ function movePlayer(leftKey, rightKey, upKey , downKey, distance){
 
 }
 
-function createGrid(map, game){
+function createGrid(map){
+
     var grid = [];
-    for(var y = 0; y < map.height; y++){
+    for(var y = 0; y < map.tilemap.height; y++){
         var col = [];
-        for(var x = 0; x < map.width; x++){
+        for(var x = 0; x < map.tilemap.width; x++){
+
             // In each cell we store the ID of the tile, which corresponds
             // to its index in the tileset of the map ("ID" field in Tiled)
-            col.push(game.getTileID(x,y));
+            col.push(map.getTileAt(x,y, true).index);
         }
         grid.push(col);
     }
