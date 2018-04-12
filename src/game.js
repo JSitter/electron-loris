@@ -39,6 +39,7 @@ class Mob{
         this.y = 0
         this.target = false
         this.player = false
+        this.last_time = 0
 
 
     }
@@ -53,16 +54,34 @@ class Mob{
         sprite.anims.play(this.name+'-death-'+this.direction)
     }
 
-    tick(hostileLocation){
+    tick(time, hostileLocation){
         if(hostileLocation){
             attackHostile(hostileLocation)
         }else{
-            this.mobStuff()
+            this.mobStuff(time)
         }
 
     }
-    mobStuff(){
-        console.log(this.name + " stuffz")
+    mobStuff(time){
+        
+        let mill_pause = 3000
+        if((time - mill_pause)>=this.last_time){
+            this.last_time = time
+            if(Math.random()<.1){
+
+                this.explore()
+            }
+
+        }
+    }
+    explore(){
+        let random_x =  2 + (2)*Math.random()  // num is random integer, from 2 to 4 
+        let random_y =  2 + (2)*Math.random() 
+        console.log("Exploring things")
+        let x_pos = Math.floor(this.x / 32)
+        let y_pos = Math.floor(this.y / 32)
+        
+
     }
 
     attackHostile(location){
@@ -90,7 +109,7 @@ class dungeonMaster{
             this.mob_roll(time)
         }
         for( var index in this.mob_box){
-            this.mob_box[index].tick()
+            this.mob_box[index].tick(time, false)
         }
        
     }
@@ -304,7 +323,7 @@ sceneOne.update = function(time, delta){
         player.setAngularVelocity(400)
     }
     movePlayer(leftKey, rightKey, upKey, downKey, player_move_amt)
-    this.DM.tick()
+    this.DM.tick(time, delta)
 
     //This is for animated tiles
     countdown-=delta;
