@@ -68,11 +68,26 @@ class Mob{
         if((time - mill_pause)>=this.last_time){
             this.last_time = time
             if(Math.random()<.1){
-
                 this.explore()
+            }else if(Math.random()<.2){
+                this.turnRandom()
             }
 
         }
+    }
+    turnRandom(){
+        console.log("Turning!")
+        let rand = Math.random()
+        if(rand < .25){
+            this.direction = "up"
+        }else if(rand < .5){
+            this.direction = "left"
+        }else if(rand < .75){
+            this.direction = "down"
+        }else{
+            this.direction = "right"
+        }
+        this.sprite.anims.play(this.name+'-stop-'+this.direction)
     }
     explore(){
         let random_x =  2 + (2)*Math.random()  // num is random integer, from 2 to 4 
@@ -370,6 +385,27 @@ function wolfAnims(animation){
         frames: animation.generateFrameNumbers('wolf', { start: 19, end: 22 }),
         frameRate: 10,
         repeat: -1
+    });
+
+    animation.create({
+        key: 'wolf-stop-up',
+        frames: [ { key: 'wolf', frame: 18 } ],
+        frameRate: 20
+    });
+    animation.create({
+        key: 'wolf-stop-down',
+        frames: [ { key: 'wolf', frame: 5 } ],
+        frameRate: 20
+    });
+    animation.create({
+        key: 'wolf-stop-left',
+        frames: [ { key: 'wolf', frame: 13 } ],
+        frameRate: 20
+    });
+    animation.create({
+        key: 'wolf-stop-right',
+        frames: [ { key: 'wolf', frame: 0 } ],
+        frameRate: 20
     });
 
 }
