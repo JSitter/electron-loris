@@ -125,15 +125,21 @@ class Mob{
         let fromY = Math.floor(this.y / 32)
         let toX = Math.floor(x/32)
         let toY = Math.floor(y/32)
-        this.Finder.findPath(fromX, fromY,toX, toY, function( path ) {
-            if (path === null) {
-                console.warn("Path was not found.");
-            } else {
-                console.log(path)
-                this.move(path);
-            }
-        });
-        this.Finder.calculate();
+        
+        try{
+            this.Finder.findPath(fromX, fromY,toX, toY, function( path ) {
+                if (path === null) {
+                    console.warn("Path was not found.");
+                } else {
+                    console.log(path)
+                    this.move(path);
+                }
+            });
+            this.Finder.calculate();
+        }catch(err){
+            console.log(err)
+        }
+        
     }
 
     move(path){
