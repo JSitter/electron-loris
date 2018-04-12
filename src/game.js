@@ -177,6 +177,24 @@ sceneOne.create = function(){
     
     //EasyStar Pathfinding library
     grid = createGrid(groundLayer)
+    console.log("properties")
+    console.log(groundTiles.tileProperties)
+
+    var properties = groundTiles.tileProperties;
+
+    var acceptableTiles = [];
+
+    for(var i = groundTiles.firstgid-1; i < groundTiles.total; i++){ // firstgid and total are fields from Tiled that indicate the range of IDs that the tiles can take in that tileset
+            if(!properties.hasOwnProperty(i)) {
+                // If there is no property indicated at all, it means it's a walkable tile
+                acceptableTiles.push(i+1);
+                continue;
+            }
+            if(!properties[i].collide) acceptableTiles.push(i+1);
+            if(properties[i].cost) this.Finder.setTileCost(i+1, properties[i].cost); // If there is a cost attached to the tile, let's register it
+        }
+    this.Finder.setAcceptableTiles(acceptableTiles);
+
     //this.Finder.setGrid(grid)
     // console.log("Finder...")
     // console.log(this.Finder)
