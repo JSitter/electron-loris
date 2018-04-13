@@ -41,7 +41,7 @@ class Mob{
         this.player = false
         this.last_time = 0
         this.Finder = path_finder
-        this.walk_velocity = 3
+        this.walk_velocity = 70
         this.run_velocity = 6
 
         console.log(name + " spawned")
@@ -235,34 +235,53 @@ class Mob{
         console.log("I walk the line")
         let that = this
         return new Promise(function(resolve, reject){
-           
-            let square_dist = Math.pow((that.sprite.x - x), 2) + Math.pow((that.sprite.y - y), 2)
             
-            let distance = Math.sqrt(square_dist)
-            console.log("sq dist")
-            console.log(String(square_dist))
-            console.log("dist")
-            console.log(distance)
-            let animate_direction
-            let x_square = Math.pow(that.walk_velocity, 2) - Math.pow(y, 2)
-            let y_square = Math.pow(that.walk_velocity, 2) - Math.pow(x, 2)
-            console.log("x square? yo " + x_square)
-            console.log("y square? yo " + Math.pow(that.walk_velocity, 2))
-            console.log(y_square)
-            let x_comp_vel = Math.sqrt(x_square)
-            let y_comp_vel = Math.sqrt(y_square)
+            var dist_x = that.sprite.x - x
+            var dist_y = that.sprite.y - y
+            var x_positive = true
+            var y_positive = true
+            var square_dist = dist_x * dist_x + dist_y * dist_y
+            var distance = Math.sqrt(square_dist)
+            let velocity_x
+            let velocity_y
+
+            console.log("Walking velocity")
+            console.log(that.walk_velocity)
+            
+            var scale_factor = distance / that.walk_velocity
+            console.log("Scale Factor")
+            console.log(scale_factor)
+            if(scale_factor != 0){
+                console.log("v x calculation:")
+                console.log(dist_x/scale_factor)
+                
+                velocity_x = dist_x/scale_factor
+                console.log(velocity_x)
+                velocity_y = dist_y/scale_factor
+            }else{
+                velocity_x = 0
+                velocity_y = 0
+            }
+
+
+            
             //that.walk_velocity
+
             let animation_time = distance / that.walk_velocity // possibly in seconds?
+            let animate_direction
             //animate direction
             if(x**2 > y**2){
                 if(x>0){
                     animate_direction = "left"
+                    x_positive = false
+
                 }else{
                     animate_direction = "right"
                 }
             }else{
                 if(y>0){
                     animate_direction = "up"
+                    y_positive = false
                 }else{
                     animate_direction = "down"
                 }
@@ -272,11 +291,11 @@ class Mob{
             console.log("Play!")
             that.sprite.anims.play(name+"-walk-"+animate_direction)
             // that.moveObject(that.sprite, x_comp_vel, y_comp_vel)
-            that.sprite.setVelocityX(x_comp_vel)
-            that.sprite.setVelocityX(y_comp_vel)
+            that.sprite.setVelocityX(velocity_x)
+            that.sprite.setVelocityX(velocity_y)
             console.log("y comp")
-            console.log(y_comp_vel)
-            console.log(x_comp_vel)
+            console.log(velocity_x)
+
             console.log("animation time")
             console.log(animation_time)
             setTimeout(resolve(animate_direction), animation_time)
