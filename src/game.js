@@ -221,8 +221,8 @@ class Mob{
             let that = this
             this.walkLine(that.sprite, path[0].x+1, path[0].y+1).then(function(direction){
                 console.log("walking " + direction)
-                // moveObject(that.sprite, 0, 0)
-                // that.sprite.anims.play(name+"-stop-"+direction)
+                moveObject(that.sprite, 0, 0)
+                that.sprite.anims.play(name+"-stop-"+direction)
             }).catch((err)=>{
                 console.log(err.text)
             })
@@ -267,15 +267,12 @@ class Mob{
                 velocity_x = 0
                 velocity_y = 0
             }
-            //that.walk_velocity
+
             
-            let animation_time = distance * 1000/ that.walk_velocity  // possibly in seconds?
-            
-            
-            // that.sprite.setVelocityY(velocity_y)
+            let animation_time = distance * 1000/ that.walk_velocity  // some unit of time
+
             let animate_direction
 
-            //animate direction
             
             if((x_2) > (y_2)){
                 if(dist_x>0){
@@ -294,7 +291,7 @@ class Mob{
             }
             
 
-            that.sprite.anims.play(name+"-walk-"+animate_direction)
+            sprite.anims.play(that.name+"-walk-"+animate_direction)
             // that.moveObject(that.sprite, x_comp_vel, y_comp_vel)
             // that.sprite.setVelocityX(67)
             
@@ -306,8 +303,8 @@ class Mob{
             // console.log("animation time")
             // console.log(animation_time)
             moveObject(sprite, velocity_x, velocity_y)
-            setTimeout(moveObject, animation_time,sprite, 0, 0)
-            setTimeout(resolve, animate_direction)
+            //setTimeout(moveObject, animation_time,sprite, 0, 0)
+            setTimeout(resolve, animation_time, animate_direction)
 
         })
 
