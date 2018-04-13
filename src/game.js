@@ -45,6 +45,7 @@ class Mob{
         this.run_velocity = 6
 
         console.log(name + " spawned")
+        this.sprite.setCollideWorldBounds(true)
 
     }
     injure(damage){
