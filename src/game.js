@@ -4,6 +4,7 @@ class Player{
         this.starting_health = 100
         this.cooldown = 2000
         this.health = this.starting_health
+        this.sprite = sprite
         this.x = 0
         this.y = 0
     }
@@ -14,6 +15,7 @@ class Player{
     }
 
     injure(damage){
+        console.log("damage taken")
         updateHUD(damage * -1)
         this.health -= damage
     }
@@ -41,7 +43,7 @@ class Mob{
         this.player = false
         this.last_time = 0
         this.Finder = path_finder
-        this.walk_velocity = 70
+        this.walk_velocity = 32
         this.run_velocity = 6
 
         console.log(name + " spawned")
@@ -114,13 +116,14 @@ class Mob{
             x_direction = 1
             y_direction = 1
         }
-
+        let block_size = 32
         let max_rolls = 4
         let roll = 0
         //Randomly choose valid point
         while(!valid_point){
-            let random_x =  (20 + (30)*Math.random()) * x_direction  // num is random integer, from 20 to 30 
-            let random_y =  (20 + (30)*Math.random() ) * y_direction
+            
+            let random_x =  Math.floor(2*block_size + (3*block_size)*Math.random())  // num is random integer, from 20 to 30 
+            let random_y =  Math.floor(2*block_size + (3*block_size)*Math.random())
             var abs_x = this.x + random_x
             var abs_y = this.y + random_y
 
@@ -172,6 +175,8 @@ class Mob{
         return new Promise(function(resolve, reject){
 
             console.log(that.name + " smells something over there.")
+            console.log(abs_x)
+            console.log(abs_y)
             let fromX = Math.floor(that.x / 32)
             let fromY = Math.floor(that.y / 32)
             let toX = Math.floor(abs_x/32)
@@ -238,22 +243,33 @@ class Mob{
         let that = this
 
         return new Promise(function(resolve, reject){
-            
+            let tile_size = 32
             var cur_x = that.sprite.x
             var cur_y = that.sprite.y
+
+            console.log("Sprite X: " + cur_x)
+            console.log("Sprite Y: " + cur_y)
+            console.log("Map X:", x)
+            console.log("Map Y:", y)
             //Remap global coordinate system to something more manageable
             //use dist_x and dist_y
-            var dist_x = cur_x - x
+            var dist_x = cur_x - x*tile_size
             let x_2 = dist_x*dist_x
 
-            var dist_y = cur_y - y
+            var dist_y = cur_y - y*tile_size
             let y_2 = dist_y*dist_y
+
+            console.log("pixel Bearing x:"+dist_x)
+            console.log("pixel Bearing y:"+dist_y)
 
             var square_dist = x_2 + y_2
             var distance = Math.sqrt(square_dist)
             let velocity_x
             let velocity_y
             
+            console.log("Tile x coors " + sprite.x/32 )
+            console.log("Tile y coors " + sprite.y/32 )
+            console.log("Bearing in Degrees " )
             
             var x_sign = (dist_x < 0) ? -1 : 1
             var y_sign = (dist_y < 0) ? -1 : 1
@@ -277,16 +293,16 @@ class Mob{
             
             if((x_2) > (y_2)){
                 if(dist_x>0){
-                    animate_direction = "left"
+                    animate_direction = "right"
 
                 }else{
-                    animate_direction = "right"
+                    animate_direction = "left"
                 }
             }else{
                 if(dist_y>0){
-                    animate_direction = "up"
-                }else{
                     animate_direction = "down"
+                }else{
+                    animate_direction = "up"
                 }
                 
             }
@@ -318,7 +334,7 @@ class Mob{
 }
 
 class dungeonMaster{
-    constructor(name, num_mobs, spawn_period, sprite_lever, path_finder){
+    constructor(name, num_mobs, spawn_period, sprite_lever, path_finder, player_ob){
         //Spawn Period is in time minutes
         this.name = name
         this.num_mobs = num_mobs
@@ -327,6 +343,8 @@ class dungeonMaster{
         this.mob_box = []
         this.sprite_lever = sprite_lever
         this.Finder = path_finder
+        this.player_ob = player_ob
+
         while( this.mob_box.length  < num_mobs){
             this.spawn_mob("wolf", 10)
         }
@@ -336,10 +354,36 @@ class dungeonMaster{
         if(this.mob_box.length<this.num_mobs){
             this.mob_roll(time)
         }
+        let min_dist = 10000
         for( var index in this.mob_box){
             this.mob_box[index].tick(time, false)
+            // let dist = this.check_player_dist( this.mob_box[index].x,  this.mob_box[index].y)
+            // if (dist < min_dist){
+            //     min_dist = dist
+            // }
         }
+        console.log("min dist" + min_dist)
+        if(min_dist<50){
+            // console.log(this.player)
+            //this.player_ob.injure(10)
+        }
+
        
+    }
+
+    check_player_dist(x, y){
+
+        let x_dist = this.player_ob.sprite.x - x
+        let y_dist = this.player_ob.sprite.y  - y
+        let x_2 = x_dist *x_dist
+        let y_2 = y_dist*y_dist
+        let square_dist = x_2 + y_2
+        let distance = Math.sqrt(square_dist)
+
+
+        // console.log("Player distance: " + distance)
+        // console.log(x_dist)
+        return distance
     }
 
     mob_roll(time, delta){
@@ -471,7 +515,7 @@ sceneOne.create = function(){
     Loris = new Player()
 
     //Create Dungeon Master
-    this.DM = new dungeonMaster("wolf", 4, 7, this.physics.add, this.Finder)
+    this.DM = new dungeonMaster("wolf", 4, 7, this.physics.add, this.Finder, Loris)
 
     player.setBounce(0.2);
     console.log("Game Object:")
@@ -793,6 +837,7 @@ var config = {
     type: Phaser.AUTO,
     width: 800,
     height: 800,
+    backgroundColor:'#e5cb91',
     physics: {
         default: 'arcade',
         arcade: {
