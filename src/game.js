@@ -244,18 +244,14 @@ class Mob{
             var distance = Math.sqrt(square_dist)
             let velocity_x
             let velocity_y
-
-            console.log("Walking velocity")
-            console.log(that.walk_velocity)
             
             var scale_factor = distance / that.walk_velocity
-            console.log("Scale Factor")
-            console.log(scale_factor)
             if(scale_factor != 0){
-                console.log("v x calculation:")
+                
                 console.log(dist_x/scale_factor)
                 
                 velocity_x = dist_x/scale_factor
+                console.log("v x calculation:")
                 console.log(velocity_x)
                 velocity_y = dist_y/scale_factor
             }else{
@@ -263,8 +259,6 @@ class Mob{
                 velocity_y = 0
             }
 
-
-            
             //that.walk_velocity
 
             let animation_time = distance / that.walk_velocity // possibly in seconds?
