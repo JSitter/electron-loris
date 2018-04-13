@@ -235,15 +235,24 @@ class Mob{
         console.log("I walk the line")
         let that = this
         return new Promise(function(resolve, reject){
-            
-            var dist_x = that.sprite.x - x
-            var dist_y = that.sprite.y - y
-            var x_positive = true
-            var y_positive = true
-            var square_dist = dist_x * dist_x + dist_y * dist_y
+            //Remap global coordinate system to something more manageable
+            //use dist_x and dist_y
+            var cur_x = that.sprite.x
+            var cur_y = that.sprite.y
+            var dist_x = cur_x - x
+            let x_2 = dist_x*dist_x
+
+            var dist_y = cur_y - y
+            let y_2 = dist_y*dist_y
+
+            var square_dist = x_2 + y_2
             var distance = Math.sqrt(square_dist)
             let velocity_x
             let velocity_y
+            
+            
+            let x_sign = x
+            let y_sign = y < 0 ? -1 : 1
             
             var scale_factor = distance / that.walk_velocity
             if(scale_factor != 0){
@@ -263,11 +272,15 @@ class Mob{
 
             let animation_time = distance / that.walk_velocity // possibly in seconds?
             let animate_direction
+
             //animate direction
-            if(x**2 > y**2){
+
+
+            console.log("X Sign: " + x_sign)
+
+            if((x_2) > (y_2)){
                 if(x>0){
                     animate_direction = "left"
-                    x_positive = false
 
                 }else{
                     animate_direction = "right"
@@ -275,7 +288,6 @@ class Mob{
             }else{
                 if(y>0){
                     animate_direction = "up"
-                    y_positive = false
                 }else{
                     animate_direction = "down"
                 }
