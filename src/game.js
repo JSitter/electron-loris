@@ -80,7 +80,6 @@ class Mob{
         }
     }
     turnRandom(){
-        console.log(this.name + " turning!")
         let rand = Math.random()
         if(rand < .25){
             this.direction = "up"
@@ -218,10 +217,12 @@ class Mob{
         if(path.length == 0){
             console.log("I lost the path.")
         }else{
-            
+            // this.sprite.setVelocityX(344)
             let that = this
-            this.walkLine(path[0].x+1, path[0].y+1).then(function(direction){
-                that.sprite.anims.play(name+"-stop-"+direction)
+            this.walkLine(that.sprite, path[0].x+1, path[0].y+1).then(function(direction){
+                console.log("walking " + direction)
+                // moveObject(that.sprite, 0, 0)
+                // that.sprite.anims.play(name+"-stop-"+direction)
             }).catch((err)=>{
                 console.log(err.text)
             })
@@ -231,14 +232,16 @@ class Mob{
 
     }
 
-    walkLine(x, y){
+    walkLine(sprite, x, y){
         console.log("I walk the line")
         let that = this
+
         return new Promise(function(resolve, reject){
-            //Remap global coordinate system to something more manageable
-            //use dist_x and dist_y
+            
             var cur_x = that.sprite.x
             var cur_y = that.sprite.y
+            //Remap global coordinate system to something more manageable
+            //use dist_x and dist_y
             var dist_x = cur_x - x
             let x_2 = dist_x*dist_x
 
@@ -251,14 +254,11 @@ class Mob{
             let velocity_y
             
             
-            let x_sign = x
-            let y_sign = y < 0 ? -1 : 1
-            
+            var x_sign = (dist_x < 0) ? -1 : 1
+            var y_sign = (dist_y < 0) ? -1 : 1
+            console.log("X sign : " + x_sign)
             var scale_factor = distance / that.walk_velocity
             if(scale_factor != 0){
-                
-                console.log(dist_x/scale_factor)
-                
                 velocity_x = dist_x/scale_factor
                 console.log("v x calculation:")
                 console.log(velocity_x)
@@ -267,44 +267,47 @@ class Mob{
                 velocity_x = 0
                 velocity_y = 0
             }
-
             //that.walk_velocity
-
-            let animation_time = distance / that.walk_velocity // possibly in seconds?
+            
+            let animation_time = distance * 1000/ that.walk_velocity  // possibly in seconds?
+            
+            
+            // that.sprite.setVelocityY(velocity_y)
             let animate_direction
 
             //animate direction
-
-
-            console.log("X Sign: " + x_sign)
-
+            
             if((x_2) > (y_2)){
-                if(x>0){
+                if(dist_x>0){
                     animate_direction = "left"
 
                 }else{
                     animate_direction = "right"
                 }
             }else{
-                if(y>0){
+                if(dist_y>0){
                     animate_direction = "up"
                 }else{
                     animate_direction = "down"
                 }
                 
             }
-            //play animation
-            console.log("Play!")
+            
+
             that.sprite.anims.play(name+"-walk-"+animate_direction)
             // that.moveObject(that.sprite, x_comp_vel, y_comp_vel)
-            that.sprite.setVelocityX(velocity_x)
-            that.sprite.setVelocityX(velocity_y)
-            console.log("y comp")
-            console.log(velocity_x)
+            // that.sprite.setVelocityX(67)
+            
+            // console.log("y comp")
+            // console.log(velocity_x)
+            console.log(velocity_y)
+            
 
-            console.log("animation time")
-            console.log(animation_time)
-            setTimeout(resolve(animate_direction), animation_time)
+            // console.log("animation time")
+            // console.log(animation_time)
+            moveObject(sprite, velocity_x, velocity_y)
+            setTimeout(moveObject, animation_time,sprite, 0, 0)
+            setTimeout(resolve, animate_direction)
 
         })
 
