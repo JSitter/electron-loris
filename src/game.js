@@ -41,6 +41,8 @@ class Mob{
         this.player = false
         this.last_time = 0
         this.Finder = path_finder
+        this.walk_velocity = 3
+        this.run_velocity = 6
 
         console.log(name + " spawned")
 
@@ -66,7 +68,7 @@ class Mob{
     }
     mobStuff(time){
         
-        let mill_pause = 30
+        let mill_pause = 300
         if((time - mill_pause)>=this.last_time){
             this.last_time = time
             if(Math.random()<.1){
@@ -113,6 +115,8 @@ class Mob{
             y_direction = 1
         }
 
+        let max_rolls = 4
+        let roll = 0
         //Randomly choose valid point
         while(!valid_point){
             let random_x =  (20 + (30)*Math.random()) * x_direction  // num is random integer, from 20 to 30 
@@ -123,6 +127,13 @@ class Mob{
             if((abs_x >= 0) && (abs_y >= 0)){
                 valid_point = true
                 
+            }
+            roll++
+            console.log("Roll: " + String(roll))
+            if( roll >= max_rolls){
+                valid_point = true
+                abs_x = this.x
+                abs_y = this.y
             }
         }
         return {
@@ -135,14 +146,8 @@ class Mob{
 
     explore(){
         console.log(this.name + " exploring things")
-
-
-
-
         let coord = this.randomWalkCoord()
         this.computePath(coord.x, coord.y)
-        
-
     }
 
     computePath(abs_x, abs_y){
@@ -151,15 +156,22 @@ class Mob{
         let toX = Math.floor(abs_x/32)
         let toY = Math.floor(abs_y/32)
         let that = this
-        console.log("Computing path:")
+        console.log("Computing relative path to absolute:")
         console.log(String(abs_x) + " " + String(abs_y))
+        console.log("Relative coords:")
+        console.log(String(toX) + " " + String(toY))
         try{
             this.Finder.findPath(fromX, fromY,toX, toY, function( path ) {
+                if(path.length == 0){
+                    that.walkLine(toX, toY)
+                    
+                }
+
                 if (path === null) {
                     console.warn("Path was not found.");
                 } else {
                     console.log(path)
-                    that.move(path);
+                    that.walkPath(path);
                 }
             });
             this.Finder.calculate();
@@ -169,10 +181,62 @@ class Mob{
         
     }
 
-    move(path){
+    walkPath(path){
         //move to path
         console.log("Path found:")
         console.log(path);
+        if(path.length == 0){
+            
+        }else{
+
+            let that = this
+            this.walkLine(path[0].x+1, path[0].y+1).then(function(direction){
+                that.sprite.anims.play(name+"-stop-"+direction)
+            }).catch((err)=>{
+                console.log(err.text)
+            })
+            return 0
+        }
+
+
+    }
+
+    walkLine(x, y){
+        let that = this
+        return new Promise(function(resolve, reject){
+            let square_dist = (that.sprite.x - x) ** 2 + (that.sprite.y - y) ** 2
+            let distance = Math.sqrt(square_dist)
+            let animate_direction
+            let x_comp_vel = Math.sqrt(that.walk_velocity**2 - y**2)
+            let y_comp_vel = Math.sqrt(that.walk_velocity**2 - x**2)
+            //that.walk_velocity
+            let animation_time = distance / that.walk_velocity // possibly in seconds?
+            //animate direction
+            if(x**2 > y**2){
+                if(x>0){
+                    animate_direction = "left"
+                }else{
+                    animate_direction = "right"
+                }
+            }else{
+                if(y>0){
+                    animate_direction = "up"
+                }else{
+                    animate_direction = "down"
+                }
+                
+            }
+            //play animation
+            that.sprite.anims.play(name+"-walk-"+animate_direction)
+            // that.moveObject(that.sprite, x_comp_vel, y_comp_vel)
+            that.sprite.setVelocityX(2)
+            that.sprite.setVelocityX(0)
+            console.log("animation time")
+            console.log(animation_time*10)
+            setTimeout(resolve(animate_direction), animation_time*10)
+
+        })
+
     }
 
     attackHostile(location){
