@@ -147,62 +147,65 @@ class Mob{
     explore(){
         console.log(this.name + " exploring things")
         let coord = this.randomWalkCoord()
-
+        let that = this
         this.computePath(coord.x, coord.y).then(function(path){
-            console.log("Path legth? " + path.length)
-            console.log(path.length)
-            if( path.length > 0){
-                console.log(this.name + " walking")
-                this.walkPath(path)
-            }else{
-                console.log("Well here might be fine...")
-            }
-        })
+            console.log("time to go")
+            that.walkPath(path)
+            // console.log("Path legth? " + path.length)
+            // console.log(path.length)
+            // if( path.length > 0){
+            //     console.log(this.name + " walking")
+            //     this.walkPath(path)
+            // }else{
+            //     console.log("Well here might be fine...")
+            // }
+        }).catch((err)=>{
+            console.log("err")
+            console.warn("Error getting path: " + err.message)
 
-        
+        })        
 
     }
 
     computePath(abs_x, abs_y){
         let that = this
         return new Promise(function(resolve, reject){
+
             console.log(that.name + " smells something over there.")
             let fromX = Math.floor(that.x / 32)
             let fromY = Math.floor(that.y / 32)
             let toX = Math.floor(abs_x/32)
             let toY = Math.floor(abs_y/32)
-
+            let fun_path
+            
             console.log("Computing relative path to absolute:")
             console.log(String(abs_x) + " " + String(abs_y))
             console.log("Relative coords:")
             console.log(String(toX) + " " + String(toY))
+            
+            
+            that.Finder.findPath(fromX, fromY,toX, toY, function( path ) {
+                
+                if(path.length == 0){
+                    console.log("I'm going to stay here.")
+                    resolve([])
+                }
 
-            try{
-                that.Finder.findPath(fromX, fromY,toX, toY, function( path ) {
-                    if(path.length == 0){
-                        console.log("I'm going to stay here.")
-                        resolve([])
-                    }
+                if (path === null) {
+                    console.warn("Path was not found.");
+                    resolve([])
+                        
+                } else {
+                    console.log("Path Found! Huzzah!"+ path.length)
+                    
+                    fun_path = path
+                    console.log(fun_path)
+                    resolve(fun_path)
+                    
+                }
+            });
+            that.Finder.calculate();
 
-                    if (path === null) {
-                        console.warn("Path was not found.");
-                        resolve([])
-                         
-                    } else {
-                        console.log("Path Found! Huzzah!"+ path.length)
-                        console.log("Path size is " + path.length)
-                        console.log(path)
-                        resolve(path) 
-                    }
-                });
-                that.Finder.calculate();
-            }catch(err){
-                console.log("Path Finding Error.")
-                console.log(err.text)
-                resolve([])
-            }
-            console.log("Don't Ask me any questions.")
-            resolve([])
         })
         
         
@@ -211,24 +214,25 @@ class Mob{
     walkPath(path){
         //move to path
         console.log("Path size" + path.length + " found")
-        console.log(path);
+        
         if(path.length == 0){
-            
+            console.log("I lost the path.")
         }else{
-
+            
             let that = this
             this.walkLine(path[0].x+1, path[0].y+1).then(function(direction){
                 that.sprite.anims.play(name+"-stop-"+direction)
             }).catch((err)=>{
                 console.log(err.text)
             })
-            return 0
+
         }
 
 
     }
 
     walkLine(x, y){
+        console.log("I walk the line")
         let that = this
         return new Promise(function(resolve, reject){
             let square_dist = (that.sprite.x - x) ** 2 + (that.sprite.y - y) ** 2
