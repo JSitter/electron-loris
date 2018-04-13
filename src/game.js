@@ -235,11 +235,22 @@ class Mob{
         console.log("I walk the line")
         let that = this
         return new Promise(function(resolve, reject){
-            let square_dist = (that.sprite.x - x) ** 2 + (that.sprite.y - y) ** 2
+           
+            let square_dist = Math.pow((that.sprite.x - x), 2) + Math.pow((that.sprite.y - y), 2)
+            
             let distance = Math.sqrt(square_dist)
+            console.log("sq dist")
+            console.log(String(square_dist))
+            console.log("dist")
+            console.log(distance)
             let animate_direction
-            let x_comp_vel = Math.sqrt(that.walk_velocity**2 - y**2)
-            let y_comp_vel = Math.sqrt(that.walk_velocity**2 - x**2)
+            let x_square = Math.pow(that.walk_velocity, 2) - Math.pow(y, 2)
+            let y_square = Math.pow(that.walk_velocity, 2) - Math.pow(x, 2)
+            console.log("x square? yo " + x_square)
+            console.log("y square? yo " + Math.pow(that.walk_velocity, 2))
+            console.log(y_square)
+            let x_comp_vel = Math.sqrt(x_square)
+            let y_comp_vel = Math.sqrt(y_square)
             //that.walk_velocity
             let animation_time = distance / that.walk_velocity // possibly in seconds?
             //animate direction
@@ -258,13 +269,17 @@ class Mob{
                 
             }
             //play animation
+            console.log("Play!")
             that.sprite.anims.play(name+"-walk-"+animate_direction)
             // that.moveObject(that.sprite, x_comp_vel, y_comp_vel)
-            that.sprite.setVelocityX(2)
-            that.sprite.setVelocityX(0)
+            that.sprite.setVelocityX(x_comp_vel)
+            that.sprite.setVelocityX(y_comp_vel)
+            console.log("y comp")
+            console.log(y_comp_vel)
+            console.log(x_comp_vel)
             console.log("animation time")
-            console.log(animation_time*10)
-            setTimeout(resolve(animate_direction), animation_time*10)
+            console.log(animation_time)
+            setTimeout(resolve(animate_direction), animation_time)
 
         })
 
