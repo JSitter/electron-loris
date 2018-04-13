@@ -147,43 +147,70 @@ class Mob{
     explore(){
         console.log(this.name + " exploring things")
         let coord = this.randomWalkCoord()
-        this.computePath(coord.x, coord.y)
+
+        this.computePath(coord.x, coord.y).then(function(path){
+            console.log("Path legth? " + path.length)
+            console.log(path.length)
+            if( path.length > 0){
+                console.log(this.name + " walking")
+                this.walkPath(path)
+            }else{
+                console.log("Well here might be fine...")
+            }
+        })
+
+        
+
     }
 
     computePath(abs_x, abs_y){
-        let fromX = Math.floor(this.x / 32)
-        let fromY = Math.floor(this.y / 32)
-        let toX = Math.floor(abs_x/32)
-        let toY = Math.floor(abs_y/32)
         let that = this
-        console.log("Computing relative path to absolute:")
-        console.log(String(abs_x) + " " + String(abs_y))
-        console.log("Relative coords:")
-        console.log(String(toX) + " " + String(toY))
-        try{
-            this.Finder.findPath(fromX, fromY,toX, toY, function( path ) {
-                if(path.length == 0){
-                    that.walkLine(toX, toY)
-                    
-                }
+        return new Promise(function(resolve, reject){
+            console.log(that.name + " smells something over there.")
+            let fromX = Math.floor(that.x / 32)
+            let fromY = Math.floor(that.y / 32)
+            let toX = Math.floor(abs_x/32)
+            let toY = Math.floor(abs_y/32)
 
-                if (path === null) {
-                    console.warn("Path was not found.");
-                } else {
-                    console.log(path)
-                    that.walkPath(path);
-                }
-            });
-            this.Finder.calculate();
-        }catch(err){
-            console.log(err)
-        }
+            console.log("Computing relative path to absolute:")
+            console.log(String(abs_x) + " " + String(abs_y))
+            console.log("Relative coords:")
+            console.log(String(toX) + " " + String(toY))
+
+            try{
+                that.Finder.findPath(fromX, fromY,toX, toY, function( path ) {
+                    if(path.length == 0){
+                        console.log("I'm going to stay here.")
+                        resolve([])
+                    }
+
+                    if (path === null) {
+                        console.warn("Path was not found.");
+                        resolve([])
+                         
+                    } else {
+                        console.log("Path Found! Huzzah!"+ path.length)
+                        console.log("Path size is " + path.length)
+                        console.log(path)
+                        resolve(path) 
+                    }
+                });
+                that.Finder.calculate();
+            }catch(err){
+                console.log("Path Finding Error.")
+                console.log(err.text)
+                resolve([])
+            }
+            console.log("Don't Ask me any questions.")
+            resolve([])
+        })
+        
         
     }
 
     walkPath(path){
         //move to path
-        console.log("Path found:")
+        console.log("Path size" + path.length + " found")
         console.log(path);
         if(path.length == 0){
             
