@@ -16,7 +16,7 @@ class Player{
 
     injure(damage){
         console.log("damage taken")
-        updateHUD(damage * -1)
+        this.updateHUD(damage * -1)
         this.health -= damage
     }
 
@@ -331,9 +331,9 @@ class Mob{
 
     }
 
-    attackHostile(location){
-        console.log("ATTACKZ LOCAZHUN!")
-        console.log(location)
+    attack(character){
+        console.log("ATTACKZ!")
+        character.injure(10)
     }
 }
 
@@ -358,12 +358,12 @@ class dungeonMaster{
         if(this.mob_box.length<this.num_mobs){
             this.mob_roll(time)
         }
-        let min_dist = 10000
+        let min_dist = 250
         for( var index in this.mob_box){
             this.mob_box[index].tick(time, false)
             let dist = this.check_player_dist( this.mob_box[index].x,  this.mob_box[index].y)
             if (dist < min_dist){
-                min_dist = dist
+                this.mob_box[index].attack(this.Player)
             }
         }
         console.log("min dist" + min_dist)
@@ -376,8 +376,6 @@ class dungeonMaster{
     }
 
     check_player_dist(x, y){
-        console.log("Player object")
-        console.log(this.Player)
         let x_dist = this.Player.sprite.x - x
         let y_dist = this.Player.sprite.y  - y
         let x_2 = x_dist *x_dist
