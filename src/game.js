@@ -25,6 +25,10 @@ class Player{
 
     }
 
+    getPosition(){
+        return {x:this.sprite.x, y:this.sprite.y}
+    }
+
 
 }
 
@@ -269,7 +273,7 @@ class Mob{
             
             console.log("Tile x coors " + sprite.x/32 )
             console.log("Tile y coors " + sprite.y/32 )
-            console.log("Bearing in Degrees " )
+            console.log("Bearing in Degrees...just kidding" )
             
             var x_sign = (dist_x < 0) ? -1 : 1
             var y_sign = (dist_y < 0) ? -1 : 1
@@ -343,7 +347,7 @@ class dungeonMaster{
         this.mob_box = []
         this.sprite_pipe = sprite_pipe
         this.Finder = path_finder
-        this.player_ob = player_ob
+        this.Player = Player
 
         while( this.mob_box.length  < num_mobs){
             this.spawn_mob("wolf", 10)
@@ -357,24 +361,25 @@ class dungeonMaster{
         let min_dist = 10000
         for( var index in this.mob_box){
             this.mob_box[index].tick(time, false)
-            // let dist = this.check_player_dist( this.mob_box[index].x,  this.mob_box[index].y)
-            // if (dist < min_dist){
-            //     min_dist = dist
-            // }
+            let dist = this.check_player_dist( this.mob_box[index].x,  this.mob_box[index].y)
+            if (dist < min_dist){
+                min_dist = dist
+            }
         }
         console.log("min dist" + min_dist)
         if(min_dist<50){
-            // console.log(this.player)
-            //this.player_ob.injure(10)
+            console.log(this.player)
+            this.Player.injure(10)
         }
 
        
     }
 
     check_player_dist(x, y){
-
-        let x_dist = this.player_ob.sprite.x - x
-        let y_dist = this.player_ob.sprite.y  - y
+        console.log("Player object")
+        console.log(this.Player)
+        let x_dist = this.Player.sprite.x - x
+        let y_dist = this.Player.sprite.y  - y
         let x_2 = x_dist *x_dist
         let y_2 = y_dist*y_dist
         let square_dist = x_2 + y_2
@@ -513,7 +518,7 @@ sceneOne.create = function(){
     console.log("Player object:")
     console.log(player)
     console.log("Player Class Instance")
-    this.Player = new Player()
+    this.Player = new Player(player)
     console.log(this.Player)
 
     //Create Dungeon Master
@@ -525,7 +530,7 @@ sceneOne.create = function(){
 
 
     player.setCollideWorldBounds(true);
-    player.body.setGravityY(0)
+
 
     //Create Mob
 
