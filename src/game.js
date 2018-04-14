@@ -334,14 +334,14 @@ class Mob{
 }
 
 class dungeonMaster{
-    constructor(name, num_mobs, spawn_period, sprite_lever, path_finder, player_ob){
+    constructor(name, num_mobs, spawn_period, sprite_pipe, path_finder, Player){
         //Spawn Period is in time minutes
         this.name = name
         this.num_mobs = num_mobs
         this.spawn_period = spawn_period
         this.creation_time = false
         this.mob_box = []
-        this.sprite_lever = sprite_lever
+        this.sprite_pipe = sprite_pipe
         this.Finder = path_finder
         this.player_ob = player_ob
 
@@ -397,7 +397,7 @@ class dungeonMaster{
 
     spawn_mob(mob_name, health){
         let coords = this.get_spawn_coord()
-        let mob = this.sprite_lever.sprite(coords.x, coords.y, mob_name);
+        let mob = this.sprite_pipe.sprite(coords.x, coords.y, mob_name);
         let mobby = new Mob(mob, mob_name, health, 10, 2000, this.Finder)
         this.mob_box.push(mobby)
     }
@@ -512,10 +512,12 @@ sceneOne.create = function(){
     this.cameras.main.startFollow(player)
     console.log("Player object:")
     console.log(player)
-    Loris = new Player()
+    console.log("Player Class Instance")
+    this.Player = new Player()
+    console.log(this.Player)
 
     //Create Dungeon Master
-    this.DM = new dungeonMaster("wolf", 4, 7, this.physics.add, this.Finder, Loris)
+    this.DM = new dungeonMaster("wolf", 4, 7, this.physics.add, this.Finder, this.Player)
 
     player.setBounce(0.2);
     console.log("Game Object:")
@@ -555,7 +557,7 @@ sceneOne.create = function(){
 }
 
 sceneOne.update = function(time, delta){
-    if( Loris.health <= 0 && gameRunning ){
+    if( this.Player.health <= 0 && gameRunning ){
         gameOver()
     }
     // this.health_bottom.scaleX = 7000
