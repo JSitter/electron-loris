@@ -226,15 +226,28 @@ class Mob{
         if(path.length == 0){
             //No path to follow
         }else{
-            // this.sprite.setVelocityX(344)
+            
             let that = this
-            this.walkLine(that.sprite, path[1].x+1, path[1].y+1).then(function(direction){
-                console.log("walking " + direction)
-                moveObject(that.sprite, 0, 0)
-                that.sprite.anims.play(name+"-stop-"+direction)
-            }).catch((err)=>{
-                console.log(err.text)
-            })
+            this.walkLine(that.sprite, path[1].x+1, path[1].y+1)
+                .then(function(walking){
+                    console.log(walking)
+                    console.log("walking " + walking.animate_direction)
+                    that.sprite.anims.play(that.name+"-walk-"+walking.animate_direction)
+                    moveObject(that.sprite, walking.velocity_x, walking.velocity_y)
+
+                    
+                    setTimeout(function(){
+                        //moveObject(that.sprite, 0, 0)
+                        
+                        that.sprite.anims.play(this.name+"-stop-"+walking.animate_direction)
+                        //that.sprite.setVelocity(0,0)
+                        // that.sprite.setVelocityX(0)
+                        // that.sprite.setVelocityY(0)
+                    },walking.animation_time*1000)
+
+                }).catch((err)=>{
+                    console.warn(err.message)
+                })
 
         }
 
@@ -248,6 +261,10 @@ class Mob{
         let that = this
 
         return new Promise(function(resolve, reject){
+            console.log("Sprity spirte")
+            console.log(that.sprite)
+            // that.moveObject(sprite, 20, 21)
+
             let tile_size = 32
             //Cur_x and cur_y are pixel coordinates of the current sprite
             //Because the sprite position is being given from the middle of the sprite
@@ -285,8 +302,8 @@ class Mob{
             
             // var x_sign = (dist_x < 0) ? -1 : 1
             // var y_sign = (dist_y < 0) ? 1 : -1
-            console.log("X sign : " + x_sign)
-            console.log("Y sign: " + y_sign)
+            // console.log("X sign : " + x_sign)
+            // console.log("Y sign: " + y_sign)
             var scale_factor = distance / that.walk_velocity
             if(scale_factor != 0){
                 velocity_x = dist_x/scale_factor
@@ -319,10 +336,11 @@ class Mob{
                 }
                 
             }
+            
             //console.log('Move the leggles')
             //console.log(that.walk)
             //console.log(animate_direction)
-            sprite.anims.play(that.name+"-walk-"+animate_direction)
+            // sprite.anims.play(that.name+"-walk-"+animate_direction)
             //console.log("Moved my legglez")
             
             // console.log("y comp")
@@ -333,9 +351,11 @@ class Mob{
 
             // console.log("animation time")
             // console.log(animation_time)
-            moveObject(sprite, velocity_x, velocity_y * y_sign)
+            
+            resolve({animation_time, animate_direction, velocity_x, velocity_y})
+            
             //setTimeout(moveObject, animation_time,sprite, 0, 0)
-            setTimeout(resolve, animation_time, animate_direction)
+            //setTimeout(resolve, animation_time, animate_direction, velocity_x, velocity_y)
 
         })
 
