@@ -61,8 +61,10 @@ class Mob{
     }
 
     tick(time, Player){
-        if(Player){
-            attackHostile(Player)
+        let player_dist = distTo(Player)
+        //mob tick
+        if(player_dist<64){
+            this.attack(Player)
         }else{
             this.mobStuff(time)
         }
@@ -211,7 +213,6 @@ class Mob{
             that.Finder.calculate();
 
         })
-        
         
     }
 
@@ -385,12 +386,13 @@ class dungeonMaster{
     }
 
     tick(time, delta){
+        //dm tick
         if(this.mob_box.length<this.num_mobs){
             this.mob_roll(time)
         }
         let min_dist = 25
         for( var index in this.mob_box){
-            this.mob_box[index].tick(time, delta, this.Player)
+            this.mob_box[index].tick(time, this.Player)
         }
 
 
@@ -752,10 +754,6 @@ function playerAnims(animation){
     });
 }
 
-function dealDamage( obj_ary ){
-  
-}
-
 function moveObject( something, x, y){
     something.setVelocityX(x)
     something.setVelocityY(y)
@@ -768,38 +766,7 @@ function gameOver(){
     console.log("ded")
 }
 
-function animateObject(something, x, y){
-    //convert vector to radian for fun :_)
-    direction = Math.atan(y/x)
 
-    if(x>0){
-        if(y>0){
-            //animate to the northeast
-        }else if(y<0){
-            //animate to the south east
-        }else{
-            //animate to the east
-            something.anims.play('right', true)
-        }
-    }else if(x<0){
-        if(y>0){
-            //animate to the northwest
-        }else if(y<0){
-            //animate to the southwest
-        }else{
-            //animate to the west
-            something.anims.play('left', true)
-        }
-    }else if(y>0 && something.body.touching.down){
-        //animate to the north
-        
-
-    }else if(y<0){
-        //animate to the south
-
-    }
-
-}
 
 function movePlayer(leftKey, rightKey, upKey , downKey, distance){
     x = 0
@@ -838,6 +805,10 @@ function movePlayer(leftKey, rightKey, upKey , downKey, distance){
     }
     moveObject(player, x, y)
 
+}
+
+function distTo(character){
+    return 42
 }
 
 function createGrid(map){
