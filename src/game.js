@@ -390,16 +390,10 @@ class dungeonMaster{
         }
         let min_dist = 25
         for( var index in this.mob_box){
-            this.mob_box[index].tick(time, false)
-            let dist = this.check_player_dist( this.mob_box[index].x,  this.mob_box[index].y)
-            if (dist < min_dist){
-                this.mob_box[index].attack(this.Player)
-            }
+            this.mob_box[index].tick(time, delta, this.Player)
         }
 
-        if(min_dist<50){
-            this.Player.injure(10)
-        }
+
 
        
     }
