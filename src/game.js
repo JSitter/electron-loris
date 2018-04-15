@@ -303,7 +303,7 @@ class Mob{
 
             let animate_direction
 
-            
+            //console.log("Choose direction to move the leggles")
             if((x_2) > (y_2)){
                 if(dist_x>0){
                     animate_direction = "right"
@@ -319,11 +319,11 @@ class Mob{
                 }
                 
             }
-            
-
+            //console.log('Move the leggles')
+            //console.log(that.walk)
+            //console.log(animate_direction)
             sprite.anims.play(that.name+"-walk-"+animate_direction)
-            // that.moveObject(that.sprite, x_comp_vel, y_comp_vel)
-            // that.sprite.setVelocityX(67)
+            //console.log("Moved my legglez")
             
             // console.log("y comp")
             // console.log(velocity_x)
