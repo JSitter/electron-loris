@@ -15,15 +15,10 @@ class Player{
     }
 
     injure(damage){
-        console.log("damage taken")
-        this.updateHUD(damage * -1)
         this.health -= damage
     }
 
-    updateHUD(amount){
-        let bar_pixel_width = 80
 
-    }
 
     getPosition(){
         return {x:this.sprite.x, y:this.sprite.y}
@@ -65,9 +60,9 @@ class Mob{
         sprite.anims.play(this.name+'-death-'+this.direction)
     }
 
-    tick(time, hostileLocation){
-        if(hostileLocation){
-            attackHostile(hostileLocation)
+    tick(time, Player){
+        if(Player){
+            attackHostile(Player)
         }else{
             this.mobStuff(time)
         }
@@ -222,14 +217,18 @@ class Mob{
 
     walkPath(path){
         //move to path
-        console.log("Path size" + path.length + " found")
-        
+        console.log(this.name + " X pixel position: " + this.sprite.x)
+        console.log(this.name + " Y pixel position: " + this.sprite.y)
+        console.log(this.name + " X tile position: " + Math.floor(this.sprite.x/32))
+        console.log(this.name + " Y tile position: " + Math.floor(this.sprite.y/32))
+        console.log("First Path X component: " + path[0].x)
+        console.log("First Path Y component: " + path[0].y)
         if(path.length == 0){
-            console.log("I lost the path.")
+            //No path to follow
         }else{
             // this.sprite.setVelocityX(344)
             let that = this
-            this.walkLine(that.sprite, path[0].x+1, path[0].y+1).then(function(direction){
+            this.walkLine(that.sprite, path[1].x+1, path[1].y+1).then(function(direction){
                 console.log("walking " + direction)
                 moveObject(that.sprite, 0, 0)
                 that.sprite.anims.play(name+"-stop-"+direction)
@@ -244,30 +243,39 @@ class Mob{
 
     walkLine(sprite, x, y){
         console.log("I walk the line")
+        console.log("point x: " + x)
+        console.log("Point y: " + y)
         let that = this
 
         return new Promise(function(resolve, reject){
             let tile_size = 32
-            var cur_x = that.sprite.x
-            var cur_y = that.sprite.y
+            //Cur_x and cur_y are pixel coordinates of the current sprite
+            //Because the sprite position is being given from the middle of the sprite
+            //  remove half the sprite distance from x and y pixel positions 
+            var cur_x = that.sprite.x + 1 - 16
+            var cur_y = that.sprite.y + 1 - 16
 
             console.log("Sprite X: " + cur_x)
             console.log("Sprite Y: " + cur_y)
-            console.log("Map X:", x)
-            console.log("Map Y:", y)
+            console.log("Dest X:", x)
+            console.log("Dest Y:", y)
+            console.log("Dest X pixels: " + x*tile_size)
+            console.log("Dest Y pixels: " + y*tile_size)
+
             //Remap global coordinate system to something more manageable
-            //use dist_x and dist_y
-            var dist_x = cur_x - x*tile_size
+            //use dist_x and dist_y for magnitude of directional components
+            var dist_x = x*tile_size - cur_x
             let x_2 = dist_x*dist_x
 
-            var dist_y = cur_y - y*tile_size
+            var dist_y = y*tile_size - cur_y
             let y_2 = dist_y*dist_y
 
-            console.log("pixel Bearing x:"+dist_x)
-            console.log("pixel Bearing y:"+dist_y)
+            console.log("dest pixel x component:"+dist_x)
+            console.log("dest pixel y component:"+dist_y)
 
             var square_dist = x_2 + y_2
             var distance = Math.sqrt(square_dist)
+            console.log("Distance to Point: " + distance)
             let velocity_x
             let velocity_y
             
@@ -275,9 +283,10 @@ class Mob{
             console.log("Tile y coors " + sprite.y/32 )
             console.log("Bearing in Degrees...just kidding" )
             
-            var x_sign = (dist_x < 0) ? -1 : 1
-            var y_sign = (dist_y < 0) ? -1 : 1
+            // var x_sign = (dist_x < 0) ? -1 : 1
+            // var y_sign = (dist_y < 0) ? 1 : -1
             console.log("X sign : " + x_sign)
+            console.log("Y sign: " + y_sign)
             var scale_factor = distance / that.walk_velocity
             if(scale_factor != 0){
                 velocity_x = dist_x/scale_factor
@@ -290,7 +299,7 @@ class Mob{
             }
 
             
-            let animation_time = distance * 1000/ that.walk_velocity  // some unit of time
+            let animation_time = distance / that.walk_velocity  // some unit of time
 
             let animate_direction
 
@@ -318,12 +327,13 @@ class Mob{
             
             // console.log("y comp")
             // console.log(velocity_x)
-            console.log(velocity_y)
-            
+
+            console.log("Velocity x: "+velocity_x)
+            console.log("Velocity y: "+velocity_y)
 
             // console.log("animation time")
             // console.log(animation_time)
-            moveObject(sprite, velocity_x, velocity_y)
+            moveObject(sprite, velocity_x, velocity_y * y_sign)
             //setTimeout(moveObject, animation_time,sprite, 0, 0)
             setTimeout(resolve, animation_time, animate_direction)
 
@@ -358,7 +368,7 @@ class dungeonMaster{
         if(this.mob_box.length<this.num_mobs){
             this.mob_roll(time)
         }
-        let min_dist = 250
+        let min_dist = 25
         for( var index in this.mob_box){
             this.mob_box[index].tick(time, false)
             let dist = this.check_player_dist( this.mob_box[index].x,  this.mob_box[index].y)
@@ -366,9 +376,8 @@ class dungeonMaster{
                 this.mob_box[index].attack(this.Player)
             }
         }
-        console.log("min dist" + min_dist)
+
         if(min_dist<50){
-            console.log(this.player)
             this.Player.injure(10)
         }
 
