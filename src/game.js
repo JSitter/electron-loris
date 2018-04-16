@@ -270,7 +270,7 @@ class dungeonMaster{
         let min_dist = 25
         for( var index in this.mob_box){
             let mob = this.mob_box[index]
-            let distance = distTo(this.Player.sprite, mob.x+48, mob.y+22)
+            let distance = distTo(this.Player.sprite, mob.x+48, mob.y+24)
             console.log(distance)
             this.mob_box[index].tick(time, this.Player)
         }
