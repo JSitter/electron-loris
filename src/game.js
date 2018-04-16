@@ -44,12 +44,13 @@ class Mob{
         this.run_velocity = 90
         this.timer = timer
         this.direction = "N"
+        this.hostile = false
 
         console.log(name + " spawned")
         this.sprite.setCollideWorldBounds(true)
 
     }
-    injure(damage){
+    injure(damage, Character){
         this.health -= damage
         if( this.health <=0){
             this._deathSequence()
@@ -69,9 +70,13 @@ class Mob{
             this.sprite.anims.play('wolf-howl-left')
             console.log("I See Lunch!")
             this.attack(Player, player_dist)
+        }else if(this.hostile){
+            dist = distTo(this.hostile, this.sprite.x, this.sprite.y)
+            this.attack(this.hostile, distance)
         }else{
             this.mobStuff(time)
         }
+
 
     }
     mobStuff(time){
@@ -273,6 +278,19 @@ class Mob{
     
         this.sprite.setVelocityX(Math.cos(angle) * this.run_velocity);
         this.sprite.setVelocityY(Math.sin(angle) * this.run_velocity);
+        //this.timer.set
+
+    }
+
+    runFromPoint(x, y){
+
+        let angle = Math.atan2(y - this.sprite.y, x - this.sprite.x);
+        let distance = distTo(this.sprite, x, y)
+        console.log("distance to run: "  + distance)
+        let time = distance / this.run_velocity
+    
+        this.sprite.setVelocityX(-1*Math.cos(angle) * this.run_velocity);
+        this.sprite.setVelocityY(-1*Math.sin(angle) * this.run_velocity);
         //this.timer.set
 
     }
