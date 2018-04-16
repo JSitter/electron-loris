@@ -262,110 +262,12 @@ class Mob{
     }
 
     walkLine(sprite, x, y){
-        // console.log("I walk the line")
-        // console.log("point x: " + x)
-        // console.log("Point y: " + y)
-        let that = this
-
-        return new Promise(function(resolve, reject){
-            // console.log("Sprity spirte")
-            // console.log(that.sprite)
-            // that.moveObject(sprite, 20, 21)
-
-            let tile_size = 32
-            //Cur_x and cur_y are pixel coordinates of the current sprite
-            //Because the sprite position is being given from the middle of the sprite
-            //  remove half the sprite distance from x and y pixel positions 
-            var cur_x = that.sprite.x + 1 - 16
-            var cur_y = that.sprite.y + 1 - 16
-
-            // console.log("Sprite X: " + cur_x)
-            // console.log("Sprite Y: " + cur_y)
-            // console.log("Dest X:", x)
-            // console.log("Dest Y:", y)
-            // console.log("Dest X pixels: " + x*tile_size)
-            // console.log("Dest Y pixels: " + y*tile_size)
-
-            //Remap global coordinate system to something more manageable
-            //use dist_x and dist_y for magnitude of directional components
-            var dist_x = x*tile_size - cur_x
-            let x_2 = dist_x*dist_x
-
-            var dist_y = y*tile_size - cur_y
-            let y_2 = dist_y*dist_y
-
-            // console.log("dest pixel x component:"+dist_x)
-            // console.log("dest pixel y component:"+dist_y)
-
-            var square_dist = x_2 + y_2
-            var distance = Math.sqrt(square_dist)
-            // console.log("Distance to Point: " + distance)
-            let velocity_x
-            let velocity_y
-            
-            // console.log("Tile x coors " + sprite.x/32 )
-            // console.log("Tile y coors " + sprite.y/32 )
-            // console.log("Bearing in Degrees...just kidding" )
-            
-            // var x_sign = (dist_x < 0) ? -1 : 1
-            // var y_sign = (dist_y < 0) ? 1 : -1
-            // console.log("X sign : " + x_sign)
-            // console.log("Y sign: " + y_sign)
-            var scale_factor = distance / that.walk_velocity
-            if(scale_factor != 0){
-                velocity_x = dist_x/scale_factor
-                // console.log("v x calculation:")
-                // console.log(velocity_x)
-                velocity_y = dist_y/scale_factor
-            }else{
-                velocity_x = 0
-                velocity_y = 0
-            }
-
-            
-            let animation_time = distance / that.walk_velocity  // some unit of time
-
-            let animate_direction
-
-            //console.log("Choose direction to move the leggles")
-            if((x_2) > (y_2)){
-                if(dist_x>0){
-                    animate_direction = "right"
-
-                }else{
-                    animate_direction = "left"
-                }
-            }else{
-                if(dist_y>0){
-                    animate_direction = "down"
-                }else{
-                    animate_direction = "up"
-                }
-                
-            }
-            
-            //console.log('Move the leggles')
-            //console.log(that.walk)
-            //console.log(animate_direction)
-            // sprite.anims.play(that.name+"-walk-"+animate_direction)
-            //console.log("Moved my legglez")
-            
-            // console.log("y comp")
-            // console.log(velocity_x)
-
-            // console.log("Velocity x: "+velocity_x)
-            // console.log("Velocity y: "+velocity_y)
-
-            // console.log("animation time")
-            // console.log(animation_time)
-            
-            resolve({animation_time, animate_direction, velocity_x, velocity_y})
-            
-            //setTimeout(moveObject, animation_time,sprite, 0, 0)
-            //setTimeout(resolve, animation_time, animate_direction, velocity_x, velocity_y)
-
-        })
-
+        speed = this.walk_velocity
+    
+        var angle = Math.atan2(y - sprite.y, x - sprite.x);
+    
+        sprite.setVelocityX(Math.cos(angle) * this.walk_velocity);
+        sprite.setVelocityY(Math.sin(angle) * this.walk_velocity);
     }
 
     attack(character, distance){
