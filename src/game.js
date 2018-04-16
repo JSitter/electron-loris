@@ -34,7 +34,8 @@ class Mob{
         this.name = name
         this.health = health
         this.damage = damage
-        this.cool_down = cool_down
+        this.cool_down_length = cool_down
+        this.cool_down_until = 0
         this.direction = "left"
         this.x = sprite.x
         this.y = sprite.y
@@ -61,10 +62,15 @@ class Mob{
     }
 
     tick(time, Player){
-        let player_dist = distTo(Player)
-        //mob tick
-        if(player_dist<64){
-            this.attack(Player)
+        //Mob tick
+
+        let player_dist = distTo(Player, this.sprite.x, this.sprite.y)
+        
+        
+        if(player_dist<50){
+            this.sprite.anims.play('wolf-howl-left')
+            console.log("I See Lunch!")
+            this.attack(Player, player_dist)
         }else{
             this.mobStuff(time)
         }
@@ -98,7 +104,7 @@ class Mob{
     }
 
     randomWalkCoord(){
-        console.log(this.name + " choosing point")
+        // console.log(this.name + " choosing point")
         let valid_point = false
         let signProb = Math.random()
         //determine direction
@@ -175,19 +181,19 @@ class Mob{
         let that = this
         return new Promise(function(resolve, reject){
 
-            console.log(that.name + " smells something over there.")
-            console.log(abs_x)
-            console.log(abs_y)
+            // console.log(that.name + " smells something over there.")
+            // console.log(abs_x)
+            // console.log(abs_y)
             let fromX = Math.floor(that.x / 32)
             let fromY = Math.floor(that.y / 32)
             let toX = Math.floor(abs_x/32)
             let toY = Math.floor(abs_y/32)
             let fun_path
             
-            console.log("Computing relative path to absolute:")
-            console.log(String(abs_x) + " " + String(abs_y))
-            console.log("Relative coords:")
-            console.log(String(toX) + " " + String(toY))
+            // console.log("Computing relative path to absolute:")
+            // console.log(String(abs_x) + " " + String(abs_y))
+            // console.log("Relative coords:")
+            // console.log(String(toX) + " " + String(toY))
             
             
             that.Finder.findPath(fromX, fromY,toX, toY, function( path ) {
@@ -205,7 +211,7 @@ class Mob{
                     console.log("Path Found! Huzzah!"+ path.length)
                     
                     fun_path = path
-                    console.log(fun_path)
+                    // console.log(fun_path)
                     resolve(fun_path)
                     
                 }
@@ -218,12 +224,12 @@ class Mob{
 
     walkPath(path){
         //move to path
-        console.log(this.name + " X pixel position: " + this.sprite.x)
-        console.log(this.name + " Y pixel position: " + this.sprite.y)
-        console.log(this.name + " X tile position: " + Math.floor(this.sprite.x/32))
-        console.log(this.name + " Y tile position: " + Math.floor(this.sprite.y/32))
-        console.log("First Path X component: " + path[0].x)
-        console.log("First Path Y component: " + path[0].y)
+        // console.log(this.name + " X pixel position: " + this.sprite.x)
+        // console.log(this.name + " Y pixel position: " + this.sprite.y)
+        // console.log(this.name + " X tile position: " + Math.floor(this.sprite.x/32))
+        // console.log(this.name + " Y tile position: " + Math.floor(this.sprite.y/32))
+        // console.log("First Path X component: " + path[0].x)
+        // console.log("First Path Y component: " + path[0].y)
         if(path.length == 0){
             //No path to follow
         }else{
@@ -231,8 +237,8 @@ class Mob{
             let that = this
             this.walkLine(that.sprite, path[1].x+1, path[1].y+1)
                 .then(function(walking){
-                    console.log(walking)
-                    console.log("walking " + walking.animate_direction)
+                    // console.log(walking)
+                    // console.log("walking " + walking.animate_direction)
                     that.sprite.anims.play(that.name+"-walk-"+walking.animate_direction)
                     moveObject(that.sprite, walking.velocity_x, walking.velocity_y)
 
@@ -256,14 +262,14 @@ class Mob{
     }
 
     walkLine(sprite, x, y){
-        console.log("I walk the line")
-        console.log("point x: " + x)
-        console.log("Point y: " + y)
+        // console.log("I walk the line")
+        // console.log("point x: " + x)
+        // console.log("Point y: " + y)
         let that = this
 
         return new Promise(function(resolve, reject){
-            console.log("Sprity spirte")
-            console.log(that.sprite)
+            // console.log("Sprity spirte")
+            // console.log(that.sprite)
             // that.moveObject(sprite, 20, 21)
 
             let tile_size = 32
@@ -273,12 +279,12 @@ class Mob{
             var cur_x = that.sprite.x + 1 - 16
             var cur_y = that.sprite.y + 1 - 16
 
-            console.log("Sprite X: " + cur_x)
-            console.log("Sprite Y: " + cur_y)
-            console.log("Dest X:", x)
-            console.log("Dest Y:", y)
-            console.log("Dest X pixels: " + x*tile_size)
-            console.log("Dest Y pixels: " + y*tile_size)
+            // console.log("Sprite X: " + cur_x)
+            // console.log("Sprite Y: " + cur_y)
+            // console.log("Dest X:", x)
+            // console.log("Dest Y:", y)
+            // console.log("Dest X pixels: " + x*tile_size)
+            // console.log("Dest Y pixels: " + y*tile_size)
 
             //Remap global coordinate system to something more manageable
             //use dist_x and dist_y for magnitude of directional components
@@ -288,18 +294,18 @@ class Mob{
             var dist_y = y*tile_size - cur_y
             let y_2 = dist_y*dist_y
 
-            console.log("dest pixel x component:"+dist_x)
-            console.log("dest pixel y component:"+dist_y)
+            // console.log("dest pixel x component:"+dist_x)
+            // console.log("dest pixel y component:"+dist_y)
 
             var square_dist = x_2 + y_2
             var distance = Math.sqrt(square_dist)
-            console.log("Distance to Point: " + distance)
+            // console.log("Distance to Point: " + distance)
             let velocity_x
             let velocity_y
             
-            console.log("Tile x coors " + sprite.x/32 )
-            console.log("Tile y coors " + sprite.y/32 )
-            console.log("Bearing in Degrees...just kidding" )
+            // console.log("Tile x coors " + sprite.x/32 )
+            // console.log("Tile y coors " + sprite.y/32 )
+            // console.log("Bearing in Degrees...just kidding" )
             
             // var x_sign = (dist_x < 0) ? -1 : 1
             // var y_sign = (dist_y < 0) ? 1 : -1
@@ -308,8 +314,8 @@ class Mob{
             var scale_factor = distance / that.walk_velocity
             if(scale_factor != 0){
                 velocity_x = dist_x/scale_factor
-                console.log("v x calculation:")
-                console.log(velocity_x)
+                // console.log("v x calculation:")
+                // console.log(velocity_x)
                 velocity_y = dist_y/scale_factor
             }else{
                 velocity_x = 0
@@ -347,8 +353,8 @@ class Mob{
             // console.log("y comp")
             // console.log(velocity_x)
 
-            console.log("Velocity x: "+velocity_x)
-            console.log("Velocity y: "+velocity_y)
+            // console.log("Velocity x: "+velocity_x)
+            // console.log("Velocity y: "+velocity_y)
 
             // console.log("animation time")
             // console.log(animation_time)
@@ -362,9 +368,13 @@ class Mob{
 
     }
 
-    attack(character){
+    attack(character, distance){
+        if(distance < 32){
+            sprite.anims.play(this.name+'-howl-left')
+            character.injure(10)
+        }
         console.log("ATTACKZ!")
-        character.injure(10)
+        
     }
 }
 
@@ -386,6 +396,7 @@ class dungeonMaster{
     }
 
     tick(time, delta){
+
         //dm tick
         if(this.mob_box.length<this.num_mobs){
             this.mob_roll(time)
@@ -654,28 +665,42 @@ function getAcceptableTiles(tileset, pathfinderObj){
 function wolfAnims(animation){
     animation.create({
         key: 'wolf-walk-left',
-        frames: animation.generateFrameNumbers('wolf', { start: 14, end: 18 }),
+        frames: animation.generateFrameNumbers('wolf', { start: 13, end: 17 }),
         frameRate: 10,
         repeat: -1
     });
 
     animation.create({
         key: 'wolf-walk-right',
-        frames: animation.generateFrameNumbers('wolf', { start: 1, end: 5 }),
+        frames: animation.generateFrameNumbers('wolf', { start: 0, end: 4 }),
         frameRate: 10,
         repeat: -1
     });
 
     animation.create({
         key: 'wolf-walk-down',
-        frames: animation.generateFrameNumbers('wolf', { start: 6, end: 9 }),
+        frames: animation.generateFrameNumbers('wolf', { start: 5, end: 8 }),
         frameRate: 10,
         repeat: -1
     });
 
     animation.create({
         key: 'wolf-walk-up',
-        frames: animation.generateFrameNumbers('wolf', { start: 19, end: 22 }),
+        frames: animation.generateFrameNumbers('wolf', { start: 18, end: 21 }),
+        frameRate: 10,
+        repeat: -1
+    });
+
+    animation.create({
+        key: 'wolf-walk-up',
+        frames: animation.generateFrameNumbers('wolf', { start: 18, end: 21 }),
+        frameRate: 10,
+        repeat: -1
+    });
+
+    animation.create({
+        key: 'wolf-howl-left',
+        frames: animation.generateFrameNumbers('wolf', { start: 9, end: 11 }),
         frameRate: 10,
         repeat: -1
     });
@@ -700,6 +725,8 @@ function wolfAnims(animation){
         frames: [ { key: 'wolf', frame: 0 } ],
         frameRate: 20
     });
+
+
 
 }
 
@@ -745,11 +772,6 @@ function playerAnims(animation){
     animation.create({
         key: 'player-left-stop',
         frames: [ { key: 'loris', frame: 3 } ],
-        frameRate: 20
-    });
-    animation.create({
-        key: 'player-right-stop',
-        frames: [ { key: 'loris', frame: 6 } ],
         frameRate: 20
     });
 }
@@ -807,8 +829,24 @@ function movePlayer(leftKey, rightKey, upKey , downKey, distance){
 
 }
 
-function distTo(character){
-    return 42
+function distTo(character, cur_x, cur_y){
+    if(character){
+        let x = character.x
+        let y = character.y
+        let x_dist = cur_x - x
+        let y_dist = cur_y - y
+        let x_2 = x_dist*x_dist
+        let y_2 = y_dist*y_dist
+        let square_dist = x_2 + y_2
+        let distance = Math.sqrt(square_dist)
+        // console.log("The distance is:")
+        // console.log(distance)
+        return distance
+    }else{
+        console.warn("Character not passed in")
+
+    }
+    return 999999
 }
 
 function createGrid(map){
