@@ -126,10 +126,10 @@ class Mob{
         //Randomly choose valid point
         while(!valid_point){
             
-            let random_x =  Math.floor(2*block_size + (3*block_size)*Math.random())  // num is random integer, from 20 to 30 
-            let random_y =  Math.floor(2*block_size + (3*block_size)*Math.random())
-            var abs_x = this.x + random_x
-            var abs_y = this.y + random_y
+            let random_x =  Math.floor(5*block_size + (10*block_size)*Math.random())  // num is random integer, from 20 to 30 
+            let random_y =  Math.floor(5*block_size + (10*block_size)*Math.random())
+            var abs_x = this.sprite.x + 48 + random_x
+            var abs_y = this.sprite.y + 24 + random_y
 
             if((abs_x >= 0) && (abs_y >= 0)){
                 valid_point = true
@@ -170,29 +170,36 @@ class Mob{
         let toX = Math.floor(abs_x/32)
         let toY = Math.floor(abs_y/32)
         let that = this
-        this.Finder.findPath(fromX, fromY,toX, toY, function( path ) {
+        try{
+            this.Finder.findPath(fromX, fromY,toX, toY, function( path ) {
             
-            if(path.length == 0){
-                console.log("I'm going to stay here.")
-                resolve([])
-            }
-
-            if (path === null) {
-                console.warn("Path was not found.");
-                resolve([])
+                if(path.length == 0){
+                    console.log("I'm going to stay here.")
                     
-            } else {
-                console.log("Path Found! Huzzah!"+ path.length)
+                }
+    
+                if (path === null) {
+                    console.warn("Path was not found.");
+                    
+                        
+                } else {
+                    console.log("Path Found! Huzzah!"+ path.length)
+    
+                    that.walkPath(path, function(walktime){
+                        console.log("Timer object")
+                        console.log(that.timer)
+                        console.log(walktime)
+                        //that.timer.delayedCall(walktime*1000, that.stopMovement, [], that)
+    
+                    }) 
+                    
+                }
+            });
+            this.Finder.calculate();
+        }catch(err){
+            console.warn(err.message)
+        }
 
-                that.walkPath(path, function(walktime){
-                    console.log("Timer ogbject")
-                    console.log(that.timer)
-                    that.timer.delayedCall(walktime*1000, that.stopMovement, [], that)
-                }) 
-                
-            }
-        });
-        this.Finder.calculate();
 
     }
 
@@ -204,12 +211,12 @@ class Mob{
         // console.log(this.name + " Y tile position: " + Math.floor(this.sprite.y/32))
         // console.log("First Path X component: " + path[0].x)
         // console.log("First Path Y component: " + path[0].y)
-        console.log("path: " + path)
+        
         if(path.length == 0){
             //No path to follow
         }else{
             let that = this
-            let time = this.walkLine(that.sprite, path[1].x+1, path[1].y+1)
+            let time = this.walkLine(this.sprite, path[1].x+1, path[1].y+1)
             callback(time)
         }
     }
@@ -220,6 +227,7 @@ class Mob{
 
         let angle = Math.atan2(y - sprite.y, x - sprite.x);
         let distance = distTo(sprite, x, y)
+        console.log("distance to unknown: "  + distance)
         let time = distance / this.walk_velocity
     
         sprite.setVelocityX(Math.cos(angle) * this.walk_velocity);
@@ -229,13 +237,14 @@ class Mob{
 
     stopMovement(){
         console.log("stopped")
-        this.sprite.setVelocityX(0)
-        this.sprite.setVelocityY(0)
+        this.sprite.setVelocityX(.1)
+        this.sprite.setVelocityY(.1)
     }
 
     attack(character, distance){
+        console.log(distance)
         if(distance < 32){
-            sprite.anims.play(this.name+'-howl-left')
+            this.sprite.anims.play(this.name+'-howl-left')
             character.injure(10)
         }
         console.log("ATTACKZ!")
@@ -268,11 +277,20 @@ class dungeonMaster{
             this.mob_roll(time)
         }
         let min_dist = 25
+
+        //for some reason it seems the distance is off by 48 in the x and 24 in the y direction
         for( var index in this.mob_box){
             let mob = this.mob_box[index]
-            let distance = distTo(this.Player.sprite, mob.x+48, mob.y+24)
-            console.log(distance)
-            this.mob_box[index].tick(time, this.Player)
+            let distance = distTo(this.Player.sprite, mob.x, mob.y)
+            // console.log("Player distance: " + distance)
+
+            //Either Hostile or Not based on distance
+            if(distance < 215){
+                mob.attack(this.Player, distance)
+            }else{
+                this.mob_box[index].tick(time, this.Player)
+            }
+           
         }
        
     }
