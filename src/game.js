@@ -31,8 +31,8 @@ class Mob{
         this.name = name
         this.health = health
         this.damage = damage
-        this.cool_down_length = cool_down
-        this.cool_down_until = 0
+        this.cool_down_time = cool_down
+        this.attack_time = 0
         this.direction = "left"
         this.x = sprite.x
         this.y = sprite.y
@@ -241,15 +241,26 @@ class Mob{
         this.sprite.setVelocityY(.1)
     }
 
-    attack(character, distance){
+    attack(Character, distance){
+
         console.log(distance)
-        if(distance < 32){
-            this.sprite.anims.play(this.name+'-howl-left')
-            character.injure(10)
+        if(distance < 45){
+            console.log("Cooldown time: " + this.cool_down_time)
+            console.log(this.attack_time + this.cool_down_time)
+            console.log(this.timer.now)
+            if(Math.floor(this.attack_time + this.cool_down_time) < Math.floor(this.timer.now)){
+                console.log("INJURE!")
+                this.sprite.anims.play(this.name+'-howl-left')
+                Character.injure(10)
+            }
+            this.attack_time = this.timer.now
+            console.log("Timer time now:")
+            console.log(this.timer.now)
         }
         console.log("ATTACKZ!")
         
     }
+    
 }
 
 class dungeonMaster{
@@ -570,7 +581,7 @@ function wolfAnims(animation){
         key: 'wolf-howl-left',
         frames: animation.generateFrameNumbers('wolf', { start: 9, end: 11 }),
         frameRate: 10,
-        repeat: -1
+        repeat: 1
     });
 
     animation.create({
