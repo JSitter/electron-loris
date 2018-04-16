@@ -28,7 +28,7 @@ class Player{
 }
 
 class Mob{
-    constructor(sprite, name, health, damage, cool_down, path_finder){
+    constructor(sprite, name, health, damage, cool_down, path_finder, timer){
 
         this.sprite = sprite
         this.name = name
@@ -45,6 +45,7 @@ class Mob{
         this.Finder = path_finder
         this.walk_velocity = 32
         this.run_velocity = 6
+        this.timer = timer
 
         console.log(name + " spawned")
         this.sprite.setCollideWorldBounds(true)
@@ -157,72 +158,50 @@ class Mob{
     explore(){
         console.log(this.name + " exploring things")
         let coord = this.randomWalkCoord()
-        let that = this
-        this.computePath(coord.x, coord.y).then(function(path){
-            console.log("time to go")
-            that.walkPath(path)
-            // console.log("Path legth? " + path.length)
-            // console.log(path.length)
-            // if( path.length > 0){
-            //     console.log(this.name + " walking")
-            //     this.walkPath(path)
-            // }else{
-            //     console.log("Well here might be fine...")
-            // }
-        }).catch((err)=>{
-            console.log("err")
-            console.warn("Error getting path: " + err.message)
-
-        })        
-
-    }
-
-    computePath(abs_x, abs_y){
-        let that = this
-        return new Promise(function(resolve, reject){
-
-            // console.log(that.name + " smells something over there.")
-            // console.log(abs_x)
-            // console.log(abs_y)
-            let fromX = Math.floor(that.x / 32)
-            let fromY = Math.floor(that.y / 32)
-            let toX = Math.floor(abs_x/32)
-            let toY = Math.floor(abs_y/32)
-            let fun_path
-            
-            // console.log("Computing relative path to absolute:")
-            // console.log(String(abs_x) + " " + String(abs_y))
-            // console.log("Relative coords:")
-            // console.log(String(toX) + " " + String(toY))
-            
-            
-            that.Finder.findPath(fromX, fromY,toX, toY, function( path ) {
-                
-                if(path.length == 0){
-                    console.log("I'm going to stay here.")
-                    resolve([])
-                }
-
-                if (path === null) {
-                    console.warn("Path was not found.");
-                    resolve([])
-                        
-                } else {
-                    console.log("Path Found! Huzzah!"+ path.length)
-                    
-                    fun_path = path
-                    // console.log(fun_path)
-                    resolve(fun_path)
-                    
-                }
-            });
-            that.Finder.calculate();
-
-        })
+        console.log("time to go")
+        this.walkDirection(coord.x, coord.y)
         
+        
+        // this.walkPath(path, function(arrive_time){
+        //     let timedEvent = this.timer.delayedCall(arrive_time, this.stopMovement, [this.sprite], this)
+        // })
+
+
     }
 
-    walkPath(path){
+    walkDirection(abs_x, abs_y){
+        let fromX = Math.floor(this.x / 32)
+        let fromY = Math.floor(this.y / 32)
+        let toX = Math.floor(abs_x/32)
+        let toY = Math.floor(abs_y/32)
+        let that = this
+        this.Finder.findPath(fromX, fromY,toX, toY, function( path ) {
+            
+            if(path.length == 0){
+                console.log("I'm going to stay here.")
+                resolve([])
+            }
+
+            if (path === null) {
+                console.warn("Path was not found.");
+                resolve([])
+                    
+            } else {
+                console.log("Path Found! Huzzah!"+ path.length)
+
+                that.walkPath(path, function(walktime){
+                    console.log(walktime)
+                }) 
+                
+            }
+        });
+        this.Finder.calculate();
+
+    }
+
+
+
+    walkPath(path, callback){
         //move to path
         // console.log(this.name + " X pixel position: " + this.sprite.x)
         // console.log(this.name + " Y pixel position: " + this.sprite.y)
@@ -230,31 +209,14 @@ class Mob{
         // console.log(this.name + " Y tile position: " + Math.floor(this.sprite.y/32))
         // console.log("First Path X component: " + path[0].x)
         // console.log("First Path Y component: " + path[0].y)
+        console.log("path: " + path)
         if(path.length == 0){
             //No path to follow
         }else{
             
             let that = this
-            this.walkLine(that.sprite, path[1].x+1, path[1].y+1)
-                .then(function(walking){
-                    // console.log(walking)
-                    // console.log("walking " + walking.animate_direction)
-                    that.sprite.anims.play(that.name+"-walk-"+walking.animate_direction)
-                    moveObject(that.sprite, walking.velocity_x, walking.velocity_y)
-
-                    
-                    setTimeout(function(){
-                        //moveObject(that.sprite, 0, 0)
-                        
-                        that.sprite.anims.play(this.name+"-stop-"+walking.animate_direction)
-                        //that.sprite.setVelocity(0,0)
-                        // that.sprite.setVelocityX(0)
-                        // that.sprite.setVelocityY(0)
-                    },walking.animation_time*1000)
-
-                }).catch((err)=>{
-                    console.warn(err.message)
-                })
+            let time = this.walkLine(that.sprite, path[1].x+1, path[1].y+1)
+            callback(time)
 
         }
 
@@ -262,12 +224,23 @@ class Mob{
     }
 
     walkLine(sprite, x, y){
-        speed = this.walk_velocity
+        x = x*32
+        y = y*32
+
+
     
-        var angle = Math.atan2(y - sprite.y, x - sprite.x);
+        let angle = Math.atan2(y - sprite.y, x - sprite.x);
+        let distance = distTo(sprite, x, y)
+        let time = distance / this.walk_velocity
     
         sprite.setVelocityX(Math.cos(angle) * this.walk_velocity);
         sprite.setVelocityY(Math.sin(angle) * this.walk_velocity);
+        return time
+    }
+
+    stopMovement(sprite){
+        sprite.setVelocityX(0)
+        sprite.setVelocityY(0)
     }
 
     attack(character, distance){
@@ -281,7 +254,7 @@ class Mob{
 }
 
 class dungeonMaster{
-    constructor(name, num_mobs, spawn_period, sprite_pipe, path_finder, Player){
+    constructor(name, num_mobs, spawn_period, sprite_pipe, path_finder, Player, timer){
         //Spawn Period is in time minutes
         this.name = name
         this.num_mobs = num_mobs
@@ -291,6 +264,7 @@ class dungeonMaster{
         this.sprite_pipe = sprite_pipe
         this.Finder = path_finder
         this.Player = Player
+        this.timer = timer
 
         while( this.mob_box.length  < num_mobs){
             this.spawn_mob("wolf", 10)
@@ -339,7 +313,7 @@ class dungeonMaster{
     spawn_mob(mob_name, health){
         let coords = this.get_spawn_coord()
         let mob = this.sprite_pipe.sprite(coords.x, coords.y, mob_name);
-        let mobby = new Mob(mob, mob_name, health, 10, 2000, this.Finder)
+        let mobby = new Mob(mob, mob_name, health, 10, 2000, this.Finder, this.timer)
         this.mob_box.push(mobby)
     }
 
@@ -457,7 +431,7 @@ sceneOne.create = function(){
     console.log(this.Player)
 
     //Create Dungeon Master
-    this.DM = new dungeonMaster("wolf", 4, 7, this.physics.add, this.Finder, this.Player)
+    this.DM = new dungeonMaster("wolf", 4, 7, this.physics.add, this.Finder, this.Player, this.time)
 
     player.setBounce(0.2);
     console.log("Game Object:")
