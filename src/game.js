@@ -41,8 +41,9 @@ class Mob{
         this.last_time = 0
         this.Finder = path_finder
         this.walk_velocity = 32
-        this.run_velocity = 6
+        this.run_velocity = 90
         this.timer = timer
+        this.direction = "N"
 
         console.log(name + " spawned")
         this.sprite.setCollideWorldBounds(true)
@@ -252,13 +253,28 @@ class Mob{
                 console.log("INJURE!")
                 this.sprite.anims.play(this.name+'-howl-left')
                 Character.injure(10)
+                this.attack_time = this.timer.now
             }
-            this.attack_time = this.timer.now
-            console.log("Timer time now:")
-            console.log(this.timer.now)
+            
+            // console.log("Timer time now:")
+            // console.log(this.timer.now)
         }
         console.log("ATTACKZ!")
+        this.runToPoint(Character.sprite.x, Character.sprite.y)
         
+    }
+
+    runToPoint(x, y){
+
+        let angle = Math.atan2(y - this.sprite.y, x - this.sprite.x);
+        let distance = distTo(this.sprite, x, y)
+        console.log("distance to run: "  + distance)
+        let time = distance / this.run_velocity
+    
+        this.sprite.setVelocityX(Math.cos(angle) * this.run_velocity);
+        this.sprite.setVelocityY(Math.sin(angle) * this.run_velocity);
+        //this.timer.set
+
     }
     
 }
