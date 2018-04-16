@@ -618,7 +618,7 @@ sceneOne.update = function(time, delta){
     let player_move_amt = 60
 
     movePlayer(leftKey, rightKey, upKey, downKey, player_move_amt)
-    
+    this.DM.tick(time, delta)
 
     //This is for animated tiles
     countdown-=delta;
@@ -677,13 +677,6 @@ function wolfAnims(animation){
     animation.create({
         key: 'wolf-walk-down',
         frames: animation.generateFrameNumbers('wolf', { start: 5, end: 8 }),
-        frameRate: 10,
-        repeat: -1
-    });
-
-    animation.create({
-        key: 'wolf-walk-up',
-        frames: animation.generateFrameNumbers('wolf', { start: 18, end: 21 }),
         frameRate: 10,
         repeat: -1
     });
