@@ -190,7 +190,9 @@ class Mob{
                 console.log("Path Found! Huzzah!"+ path.length)
 
                 that.walkPath(path, function(walktime){
-                    console.log(walktime)
+                    console.log("Timer ogbject")
+                    console.log(that.timer)
+                    that.timer.delayedCall(walktime, that.stopMovement, [], that)
                 }) 
                 
             }
@@ -238,9 +240,10 @@ class Mob{
         return time
     }
 
-    stopMovement(sprite){
-        sprite.setVelocityX(0)
-        sprite.setVelocityY(0)
+    stopMovement(){
+        console.log("stopped")
+        this.sprite.setVelocityX(0)
+        this.sprite.setVelocityY(0)
     }
 
     attack(character, distance){
@@ -431,7 +434,7 @@ sceneOne.create = function(){
     console.log(this.Player)
 
     //Create Dungeon Master
-    this.DM = new dungeonMaster("wolf", 4, 7, this.physics.add, this.Finder, this.Player, this.time)
+    this.DM = new dungeonMaster("wolf", 1, 7, this.physics.add, this.Finder, this.Player, this.time)
 
     player.setBounce(0.2);
     console.log("Game Object:")
