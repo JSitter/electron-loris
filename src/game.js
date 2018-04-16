@@ -478,7 +478,6 @@ sceneOne.preload = function(){
     this.load.image('bar', 'bar.png')
     this.lastPress = false
     this.Finder = new EasyStar.js()
-
     this.load.spritesheet('loris', 'loris-sprite.png', { frameWidth: 45, frameHeight: 45 });
     this.load.spritesheet('wolf', 'betterwolfsprite.png', {frameWidth: 70, frameHeight: 70})
     console.log("preload finished")
@@ -617,11 +616,9 @@ sceneOne.update = function(time, delta){
         this.cameras.main.shake(500);
     }
     let player_move_amt = 60
-    if(angleKey.isDown){
-        player.setAngularVelocity(400)
-    }
+
     movePlayer(leftKey, rightKey, upKey, downKey, player_move_amt)
-    this.DM.tick(time, delta)
+    
 
     //This is for animated tiles
     countdown-=delta;
