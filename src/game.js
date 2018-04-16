@@ -18,12 +18,9 @@ class Player{
         this.health -= damage
     }
 
-
-
     getPosition(){
         return {x:this.sprite.x, y:this.sprite.y}
     }
-
 
 }
 
@@ -65,8 +62,7 @@ class Mob{
     tick(time, Player){
         //Mob tick
 
-        let player_dist = distTo(Player, this.sprite.x, this.sprite.y)
-        
+        let player_dist = 7878//distTo(Player, this.sprite.x, this.sprite.y)
         
         if(player_dist<50){
             this.sprite.anims.play('wolf-howl-left')
@@ -151,7 +147,6 @@ class Mob{
             x: abs_x,
             y: abs_y
         }
-
         
     }
 
@@ -192,7 +187,7 @@ class Mob{
                 that.walkPath(path, function(walktime){
                     console.log("Timer ogbject")
                     console.log(that.timer)
-                    that.timer.delayedCall(walktime, that.stopMovement, [], that)
+                    that.timer.delayedCall(walktime*1000, that.stopMovement, [], that)
                 }) 
                 
             }
@@ -200,8 +195,6 @@ class Mob{
         this.Finder.calculate();
 
     }
-
-
 
     walkPath(path, callback){
         //move to path
@@ -215,22 +208,16 @@ class Mob{
         if(path.length == 0){
             //No path to follow
         }else{
-            
             let that = this
             let time = this.walkLine(that.sprite, path[1].x+1, path[1].y+1)
             callback(time)
-
         }
-
-
     }
 
     walkLine(sprite, x, y){
         x = x*32
         y = y*32
 
-
-    
         let angle = Math.atan2(y - sprite.y, x - sprite.x);
         let distance = distTo(sprite, x, y)
         let time = distance / this.walk_velocity
@@ -282,11 +269,11 @@ class dungeonMaster{
         }
         let min_dist = 25
         for( var index in this.mob_box){
+            let mob = this.mob_box[index]
+            let distance = distTo(this.Player.sprite, mob.x+48, mob.y+22)
+            console.log(distance)
             this.mob_box[index].tick(time, this.Player)
         }
-
-
-
        
     }
 
@@ -297,7 +284,6 @@ class dungeonMaster{
         let y_2 = y_dist*y_dist
         let square_dist = x_2 + y_2
         let distance = Math.sqrt(square_dist)
-
 
         // console.log("Player distance: " + distance)
         // console.log(x_dist)
@@ -328,13 +314,8 @@ class dungeonMaster{
 
 }
 
-
-
 // create a new scene named "One"
 let sceneOne = new this.Phaser.Scene('One');
-
-
-
 
 var map, waveTiles, groundTiles, waveLayer, groundLayer, countdown, changed;
 var camera;
