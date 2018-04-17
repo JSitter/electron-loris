@@ -247,9 +247,10 @@ class Mob{
         this.sprite.setVelocityY(.1)
     }
 
-    attack(Character, distance){
+    attack(Character){
+        let distance = distTo(this.sprite, Character.sprite.x, Character.sprite.y)
+        console.log("Computed distance:  "+ distance)
 
-        console.log(distance)
         if(distance < 45){
             console.log("Cooldown time: " + this.cool_down_time)
             console.log(this.attack_time + this.cool_down_time)
