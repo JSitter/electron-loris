@@ -2,7 +2,7 @@
 class Player{
     constructor(sprite){
         this.starting_health = 100
-        this.cooldown = 2000
+        this.cooldown = 100
         this.health = this.starting_health
         this.sprite = sprite
         this.x = 0
@@ -16,6 +16,7 @@ class Player{
 
     injure(damage){
         this.health -= damage
+        //this.health_top.scaleX = (260 * damage / 100)/2
     }
 
     getPosition(){
@@ -142,7 +143,7 @@ class Mob{
                 
             }
             roll++
-            console.log("Roll: " + String(roll))
+            // console.log("Roll: " + String(roll))
             if( roll >= max_rolls){
                 valid_point = true
                 abs_x = this.x
@@ -157,9 +158,9 @@ class Mob{
     }
 
     explore(){
-        console.log(this.name + " exploring things")
+        // console.log(this.name + " exploring things")
         let coord = this.randomWalkCoord()
-        console.log("time to go")
+        // console.log("time to go")
         this.walkDirection(coord.x, coord.y)
         
         
@@ -180,21 +181,21 @@ class Mob{
             this.Finder.findPath(fromX, fromY,toX, toY, function( path ) {
             
                 if(path.length == 0){
-                    console.log("I'm going to stay here.")
+                    // console.log("I'm going to stay here.")
                     
                 }
     
                 if (path === null) {
-                    console.warn("Path was not found.");
+                    // console.warn("Path was not found.");
                     
                         
                 } else {
-                    console.log("Path Found! Huzzah!"+ path.length)
+                    // console.log("Path Found! Huzzah!"+ path.length)
     
                     that.walkPath(path, function(walktime){
-                        console.log("Timer object")
-                        console.log(that.timer)
-                        console.log(walktime)
+                        // console.log("Timer object")
+                        // console.log(that.timer)
+                        // console.log(walktime)
                         //that.timer.delayedCall(walktime*1000, that.stopMovement, [], that)
     
                     }) 
@@ -249,23 +250,24 @@ class Mob{
 
     attack(Character){
         let distance = distTo(this.sprite, Character.sprite.x, Character.sprite.y)
-        console.log("Computed distance:  "+ distance)
+        // console.log("Computed distance:  "+ distance)
 
         if(distance < 45){
-            console.log("Cooldown time: " + this.cool_down_time)
-            console.log(this.attack_time + this.cool_down_time)
-            console.log(this.timer.now)
+            // console.log("Cooldown time: " + this.cool_down_time)
+            // console.log(this.attack_time + this.cool_down_time)
+            // console.log(this.timer.now)
             if(Math.floor(this.attack_time + this.cool_down_time) < Math.floor(this.timer.now)){
                 console.log("INJURE!")
+                console.log(this.damage)
                 this.sprite.anims.play(this.name+'-howl-left')
-                Character.injure(10)
+                Character.injure(this.damage)
                 this.attack_time = this.timer.now
             }
             
             // console.log("Timer time now:")
             // console.log(this.timer.now)
         }
-        console.log("ATTACKZ!")
+        // console.log("ATTACKZ!")
         this.runToPoint(Character.sprite.x, Character.sprite.y)
         
     }
@@ -274,7 +276,7 @@ class Mob{
 
         let angle = Math.atan2(y - this.sprite.y, x - this.sprite.x);
         let distance = distTo(this.sprite, x, y)
-        console.log("distance to run: "  + distance)
+        // console.log("distance to run: "  + distance)
         let time = distance / this.run_velocity
     
         this.sprite.setVelocityX(Math.cos(angle) * this.run_velocity);
@@ -306,13 +308,14 @@ class dungeonMaster{
         this.spawn_period = spawn_period
         this.creation_time = false
         this.mob_box = []
+        this.dead_mobs = []
         this.sprite_pipe = sprite_pipe
         this.Finder = path_finder
         this.Player = Player
         this.timer = timer
 
         while( this.mob_box.length  < num_mobs){
-            this.spawn_mob("wolf", 10)
+            this.spawn_mob("wolf", 100 , 28)
         }
     }
 
@@ -327,6 +330,7 @@ class dungeonMaster{
         //for some reason it seems the distance is off by 48 in the x and 24 in the y direction
         for( var index in this.mob_box){
             let mob = this.mob_box[index]
+            
             let distance = distTo(this.Player.sprite, mob.x, mob.y)
             // console.log("Player distance: " + distance)
 
@@ -359,14 +363,14 @@ class dungeonMaster{
         mob_prob = (delta/ this.spawn_period * 60000)
         if(roll <= mob_prob){
             //spawn mob
-            this.spawn_mob('wolf', 10)
+            this.spawn_mob('wolf', 10, 28)
         }
     }
 
-    spawn_mob(mob_name, health){
+    spawn_mob(mob_name, health, damage){
         let coords = this.get_spawn_coord()
         let mob = this.sprite_pipe.sprite(coords.x, coords.y, mob_name);
-        let mobby = new Mob(mob, mob_name, health, 10, 2000, this.Finder, this.timer)
+        let mobby = new Mob(mob, mob_name, health, damage, 1000, this.Finder, this.timer)
         this.mob_box.push(mobby)
     }
 
@@ -400,6 +404,7 @@ sceneOne.preload = function(){
     this.load.image('beach_sand_woa3', 'beach_sand_woa3.png');
     this.load.image('pixel', 'pixel.png')
     this.load.image('bar', 'bar.png')
+    this.load.image('gameover', 'gameover.png')
     this.lastPress = false
     this.Finder = new EasyStar.js()
     this.load.spritesheet('loris', 'loris-sprite.png', { frameWidth: 45, frameHeight: 45 });
@@ -409,6 +414,7 @@ sceneOne.preload = function(){
 var shakeTime = 0
 
 sceneOne.create = function(){
+
     //Create maps and Tilesets
     // Install animated tiles plugin
     this.sys.install('AnimatedTiles');
@@ -422,9 +428,12 @@ sceneOne.create = function(){
     groundLayer = map.createDynamicLayer('Base', groundTiles, 0, 0);
     waveLayer = map.createDynamicLayer('waves', waveTiles, 0, 0);
 
+
+
     console.log("Charmed - Animated Tiles ")
     // Init animations on map
     this.sys.animatedTiles.init(map);
+    this.systemshock = this.sys
     
     //EasyStar Pathfinding library
     // console.log("properties")
@@ -445,24 +454,33 @@ sceneOne.create = function(){
     this.health_bottom.scaleY = 20
 
     this.health_top = this.add.image(50, 40, 'pixel').setScrollFactor(0)
-    console.log("health image")
-    console.log(this.health_top)
+    // console.log("health image")
+    // console.log(this.health_top)
     this.health_top.scaleX = -260
     this.health_top.scaleY = 20
-    console.log("Health bar:")
+    // console.log("Health bar:")
     
     lebar = this.add.image(180,30, "bar").setScrollFactor(0)
     lebar.scaleX = 3
     lebar.scaleY = 2
-    console.log(this.health_top)
+    // console.log(this.health_top)
 
     this.health_top.setTint(0xff0000)
     //Add Cameras
-    this.cameras.main.setSize(800, 800)
+    camera = this.cameras.main.setSize(800, 800)
+
+
     console.log("Main Camera")
     console.log(this.cameras.main)
     // camera = this.cameras.add();
    
+    gameOverText = this.add.text(0, 0, 'GAME OVER', { font: '84px Arial', fill: '#fff' });
+    // gameOverText.anchor.setTo(0.5, 0.5);
+    gameOverText.visible = false;
+
+    console.log("Gamve 0over textg")
+    console.log(gameOverText)
+
     leftKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J)
     rightKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L)
     downKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K)
@@ -519,18 +537,11 @@ sceneOne.create = function(){
 }
 
 sceneOne.update = function(time, delta){
+    updateHealthBar(this.health_top, this.Player.health)
     if( this.Player.health <= 0 && gameRunning ){
         gameOver()
     }
-    // this.health_bottom.scaleX = 7000
-    // this.health_bottom.scaleY =1000
-    
-    // health_bottom.scale.y = 10
-    // health_top.scaleMode = 1
-    // health_bottom.name = "health_bottom"
-    // health_top.name = "health_top"
-    // health_top.width = 70
-    // health_top.height = 10
+
     
 
     if (shakeTime > 0)
@@ -644,6 +655,8 @@ function wolfAnims(animation){
 
 }
 
+
+
 function playerAnims(animation){
     animation.create({
         key: 'player-left',
@@ -700,6 +713,18 @@ function gameOver(){
     shakeTime = 2000
     gameRunning = false
     console.log("ded")
+    console.log(this.systemshock)
+    console.log("Camera")
+    console.log(camera)
+    console.log("gamover text")
+    console.log(gameOverText)
+    gameOverText.x = camera.scrollX + (camera.width/2)
+    gameOverText.y = camera.scrollY + (camera.height/2)
+    gameOverText.visible = true
+
+    //this.systemshock.game.destroy()
+    // this.timedEvent = this.time.delayedCall(2000, this.gameOver, [], this);
+    
 }
 
 
@@ -761,6 +786,16 @@ function distTo(character, cur_x, cur_y){
 
     }
     return 999999
+}
+
+function updateHealthBar(bar, player_health){
+    let full_health = 100
+    if(player_health <= 0){
+        bar.scaleX = 0
+    }else{
+        bar.scaleX = -player_health/full_health*260
+    }
+    
 }
 
 function createGrid(map){
