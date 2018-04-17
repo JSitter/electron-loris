@@ -497,7 +497,7 @@ sceneOne.create = function(){
     console.log(this.Player)
 
     //Create Dungeon Master
-    this.DM = new dungeonMaster("wolf", 1, 7, this.physics.add, this.Finder, this.Player, this.time)
+    this.DM = new dungeonMaster("wolf", 4, 7, this.physics.add, this.Finder, this.Player, this.time)
 
     player.setBounce(0.2);
     console.log("Game Object:")
@@ -718,8 +718,8 @@ function gameOver(){
     console.log(camera)
     console.log("gamover text")
     console.log(gameOverText)
-    gameOverText.x = camera.scrollX + (camera.width/2)
-    gameOverText.y = camera.scrollY + (camera.height/2)
+    gameOverText.x = camera.scrollX + (camera.width/2)-280
+    gameOverText.y = camera.scrollY + (camera.height/2)-150
     gameOverText.visible = true
 
     //this.systemshock.game.destroy()
@@ -824,6 +824,7 @@ var config = {
     width: 800,
     height: 800,
     backgroundColor:'#e5cb91',
+    parent: 'slow-loris-game',
     physics: {
         default: 'arcade',
         arcade: {
