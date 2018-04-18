@@ -182,7 +182,7 @@ class Mob{
         console.log("Direction")
         console.log(direction)
         this.sprite.anims.play('wolf-walk-'+direction)
-        
+
         try{
             this.Finder.findPath(fromX, fromY,toX, toY, function( path ) {
             
@@ -749,9 +749,13 @@ function gameOver(){
     gameOverText.x = camera.scrollX + (camera.width/2)-280
     gameOverText.y = camera.scrollY + (camera.height/2)-150
     gameOverText.visible = true
-
-    //this.systemshock.game.destroy()
-    // this.timedEvent = this.time.delayedCall(2000, this.gameOver, [], this);
+    
+    let grand_event = function(){
+        this.player.destroy()
+    }
+    //this.player.destroy
+    setTimeout(grand_event, 3000)
+    //this.timedEvent = this.time.delayedCall(2000, grand_event, [], this);
     
 }
 
