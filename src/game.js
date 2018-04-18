@@ -429,6 +429,9 @@ var camera;
 
 var gameRunning = true
 
+var winCoord = {x : 570, y: 767 }
+
+
 sceneOne.init = function(){
     this.playerSpeed = 1.5
     this.enemySpeed = 2
@@ -583,8 +586,9 @@ sceneOne.update = function(time, delta){
     if( this.Player.health <= 0 && gameRunning ){
         gameOver()
     }
-
-    
+    if(distTo(this.player, winCoord.x, winCoord.y)<50){
+        winGame()
+    }
 
     if (shakeTime > 0)
     {
@@ -749,6 +753,12 @@ function moveObject( something, x, y){
     something.setVelocityX(x)
     something.setVelocityY(y)
 
+}
+
+function winGame(){
+    this.player.visible = false
+    this.gameRunning = false
+    gameWonText.visible = true
 }
 
 function gameOver(){
