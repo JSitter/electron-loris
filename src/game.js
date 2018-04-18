@@ -177,6 +177,12 @@ class Mob{
         let toX = Math.floor(abs_x/32)
         let toY = Math.floor(abs_y/32)
         let that = this
+
+        let direction = this.getMoveDirection(fromX, fromY, toX, toY)
+        console.log("Direction")
+        console.log(direction)
+        this.sprite.anims.play('wolf-walk-'+direction)
+        
         try{
             this.Finder.findPath(fromX, fromY,toX, toY, function( path ) {
             
@@ -191,13 +197,17 @@ class Mob{
                         
                 } else {
                     // console.log("Path Found! Huzzah!"+ path.length)
-    
+
+
                     that.walkPath(path, function(walktime){
                         // console.log("Timer object")
                         // console.log(that.timer)
                         // console.log(walktime)
                         //that.timer.delayedCall(walktime*1000, that.stopMovement, [], that)
-    
+                        // let direction = that.getMoveDirection(fromX, fromY, toX, toY)
+                        // console.log("Direction")
+                        // console.log(direction)
+                        // that.sprite.anims.play(that.name+'-walk-'+direction)
                     }) 
                     
                 }
@@ -236,10 +246,28 @@ class Mob{
         let distance = distTo(sprite, x, y)
         console.log("distance to unknown: "  + distance)
         let time = distance / this.walk_velocity
-    
+        
         sprite.setVelocityX(Math.cos(angle) * this.walk_velocity);
         sprite.setVelocityY(Math.sin(angle) * this.walk_velocity);
         return time
+    }
+
+    getMoveDirection(fromX, toX, fromY, toY){
+        if(Math.abs(fromX - toX)>Math.abs(fromY-toY)){
+            if(fromX > toX){
+                return "right"
+            }else{
+                return "left"
+            }
+        }else{
+            if(fromY > toY){
+                return "down"
+            }else{
+                return "up"
+            }
+        }
+            
+        
     }
 
     stopMovement(){
@@ -429,11 +457,11 @@ sceneOne.create = function(){
     waveLayer = map.createDynamicLayer('waves', waveTiles, 0, 0);
 
 
-
+    groundLayer.setScale(1)
     console.log("Charmed - Animated Tiles ")
     // Init animations on map
-    this.sys.animatedTiles.init(map);
-    this.systemshock = this.sys
+    // this.sys.animatedTiles.init(map);
+
     
     //EasyStar Pathfinding library
     // console.log("properties")
