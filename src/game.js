@@ -476,16 +476,6 @@ sceneOne.create = function(){
 
     groundLayer.setScale(1)
     console.log("Charmed - Animated Tiles ")
-    // Init animations on map
-    // this.sys.animatedTiles.init(map);
-
-    
-    //EasyStar Pathfinding library
-    // console.log("properties")
-    // console.log(groundTiles.tileProperties)
-    // console.log("ground layer index at...blah")
-    // console.log(groundLayer.getTileAt(4,5, true).index)
-
     
     grid = createGrid(groundLayer)
     let acceptableTiles = getAcceptableTiles(groundTiles, this.Finder)
@@ -499,16 +489,14 @@ sceneOne.create = function(){
     this.health_bottom.scaleY = 20
 
     this.health_top = this.add.image(50, 40, 'pixel').setScrollFactor(0)
-    // console.log("health image")
-    // console.log(this.health_top)
+
     this.health_top.scaleX = -260
     this.health_top.scaleY = 20
-    // console.log("Health bar:")
     
     lebar = this.add.image(180,30, "bar").setScrollFactor(0)
     lebar.scaleX = 3
     lebar.scaleY = 2
-    // console.log(this.health_top)
+
 
     this.health_top.setTint(0xff0000)
     //Add Cameras
@@ -519,12 +507,12 @@ sceneOne.create = function(){
     console.log(this.cameras.main)
     // camera = this.cameras.add();
    
-    gameOverText = this.add.text(0, 0, 'EATEN', { font: '84px Arial', fill: '#fff' });
-    gameWonText = this.add.text(0,0, "HOME AT LAST",{ font: '84px Arial', fill: '#fff' })
+    gameOverText = this.add.text(0, 0, 'EATEN', { font: '84px Arial', fill: '#ea4a6e' });
+    gameWonText = this.add.text(0,0, "HOME AT LAST",{ font: '84px Arial', fill: '#12c7ea' })
     homeTree = this.add.image(492, 615, 'loris_hometree')
     // gameOverText.anchor.setTo(0.5, 0.5);
-    gameOverText.visible = false;
-    gameWonText.visible = false;
+    gameOverText.visible = false
+    gameWonText.visible = false
 
     console.log("Gamve 0over textg")
     console.log(gameOverText)
@@ -593,7 +581,8 @@ sceneOne.update = function(time, delta){
         gameOver()
     }
     if(distTo(player, winCoord.x, winCoord.y)<50){
-        winGame()
+        this.DM.gameRunning = false
+        winGame(gameWonText)
     }
 
     if (shakeTime > 0)
@@ -761,18 +750,18 @@ function moveObject( something, x, y){
 
 }
 
-function winGame(){
-    this.DM.gameRunning = false
+function winGame(text){
+    
     this.player.visible = false
     this.gameRunning = false
-    gameWonText.x = camera.scrollX + (camera.width/2)-280
-    gameWonText.y = camera.scrollY + (camera.height/2)-150
-    gameWonText.visible = true
+    text.x = player.x - 310
+    text.y = player.y - 50
+    text.visible = true
     let grand_event = function(){
         this.player.destroy()
     }
-    this.timedEvent = this.time.delayedCall(1500, grand_event, [], this)
-
+    //timedEvent = time.delayedCall(1500, grand_event, [], this)
+    setTimeout(grand_event, 1500)
 
 }
 
@@ -788,8 +777,8 @@ function gameOver(){
     console.log(gameOverText)
     console.log("Game Running bool: ")
     console.log(String(this.gameRunning))
-    gameOverText.x = camera.scrollX + (camera.width/2)-280
-    gameOverText.y = camera.scrollY + (camera.height/2)-150
+    gameOverText.x = player.x - 130
+    gameOverText.y = player.y - 100
     gameOverText.visible = true
     player.visible = false
     this.DM.gameRunning = false
