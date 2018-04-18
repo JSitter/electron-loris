@@ -261,9 +261,9 @@ class Mob{
             }
         }else{
             if(fromY > toY){
-                return "down"
-            }else{
                 return "up"
+            }else{
+                return "down"
             }
         }
             
@@ -295,18 +295,29 @@ class Mob{
             // console.log("Timer time now:")
             // console.log(this.timer.now)
         }
+
+        // let direction = this.getMoveDirection(this.sprite.x, this.sprite.y, x, y)
+        // console.log("Direction")
+        // console.log(direction)
+        // this.sprite.anims.play('wolf-walk-'+direction)
         // console.log("ATTACKZ!")
         this.runToPoint(Character.sprite.x, Character.sprite.y)
         
     }
-
+    
     runToPoint(x, y){
+
+
 
         let angle = Math.atan2(y - this.sprite.y, x - this.sprite.x);
         let distance = distTo(this.sprite, x, y)
         // console.log("distance to run: "  + distance)
         let time = distance / this.run_velocity
-    
+        console.log("running!")
+        
+        // let direction = this.getMoveDirection(this.sprite.x, this.sprite.y, x, y)
+        // console.log(direction)
+        // this.sprite.anims.play(this.name+"-walk-"+direction)
         this.sprite.setVelocityX(Math.cos(angle) * this.run_velocity);
         this.sprite.setVelocityY(Math.sin(angle) * this.run_velocity);
         //this.timer.set
