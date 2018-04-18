@@ -443,7 +443,7 @@ sceneOne.preload = function(){
     this.load.image('beach_sand_woa3', 'beach_sand_woa3.png');
     this.load.image('pixel', 'pixel.png')
     this.load.image('bar', 'bar.png')
-    this.load.image('gameover', 'gameover.png')
+    this.load.image('loris_hometree','lorishometree.png')
     this.lastPress = false
     this.Finder = new EasyStar.js()
     this.load.spritesheet('loris', 'loris-sprite.png', { frameWidth: 45, frameHeight: 45 });
@@ -513,9 +513,12 @@ sceneOne.create = function(){
     console.log(this.cameras.main)
     // camera = this.cameras.add();
    
-    gameOverText = this.add.text(0, 0, 'GAME OVER', { font: '84px Arial', fill: '#fff' });
+    gameOverText = this.add.text(0, 0, 'EATEN', { font: '84px Arial', fill: '#fff' });
+    gameWonText = this.add.text(0,0, "HOME AT LAST",{ font: '84px Arial', fill: '#fff' })
+    homeTree = this.add.image(492, 615, 'loris_hometree')
     // gameOverText.anchor.setTo(0.5, 0.5);
     gameOverText.visible = false;
+    gameWonText.visible = false;
 
     console.log("Gamve 0over textg")
     console.log(gameOverText)
@@ -750,13 +753,15 @@ function moveObject( something, x, y){
 
 function gameOver(){
     shakeTime = 2000
-    gameRunning = false
+    this.gameRunning = false
     console.log("ded")
     console.log(this.systemshock)
     console.log("Camera")
     console.log(camera)
     console.log("gamover text")
     console.log(gameOverText)
+    console.log("Game Running bool: ")
+    console.log(String(this.gameRunning))
     gameOverText.x = camera.scrollX + (camera.width/2)-280
     gameOverText.y = camera.scrollY + (camera.height/2)-150
     gameOverText.visible = true
