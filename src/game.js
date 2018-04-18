@@ -429,7 +429,7 @@ var camera;
 
 var gameRunning = true
 
-var winCoord = {x : 570, y: 767 }
+var winCoord = {x : 497, y: 663 }
 
 
 sceneOne.init = function(){
@@ -542,7 +542,7 @@ sceneOne.create = function(){
     console.log(this.Player)
 
     //Create Dungeon Master
-    this.DM = new dungeonMaster("wolf", 4, 7, this.physics.add, this.Finder, this.Player, this.time)
+    this.DM = new dungeonMaster("wolf", 1, 7, this.physics.add, this.Finder, this.Player, this.time)
 
     player.setBounce(0.2);
     console.log("Game Object:")
@@ -582,11 +582,14 @@ sceneOne.create = function(){
 }
 
 sceneOne.update = function(time, delta){
+    console.log("Distance from win")
+    console.log(player.x)
+    console.log(player.y)
     updateHealthBar(this.health_top, this.Player.health)
     if( this.Player.health <= 0 && gameRunning ){
         gameOver()
     }
-    if(distTo(this.player, winCoord.x, winCoord.y)<50){
+    if(distTo(player, winCoord.x, winCoord.y)<50){
         winGame()
     }
 
