@@ -352,6 +352,7 @@ class dungeonMaster{
         this.Finder = path_finder
         this.Player = Player
         this.timer = timer
+        this.gameRunning = true
 
         while( this.mob_box.length  < num_mobs){
             this.spawn_mob("wolf", 100 , 28)
@@ -360,26 +361,28 @@ class dungeonMaster{
 
     tick(time, delta){
 
-        //dm tick
-        if(this.mob_box.length<this.num_mobs){
-            this.mob_roll(time)
-        }
-        let min_dist = 25
-
-        //for some reason it seems the distance is off by 48 in the x and 24 in the y direction
-        for( var index in this.mob_box){
-            let mob = this.mob_box[index]
-            
-            let distance = distTo(this.Player.sprite, mob.x, mob.y)
-            // console.log("Player distance: " + distance)
-
-            //Either Hostile or Not based on distance
-            if(distance < 215){
-                mob.attack(this.Player, distance)
-            }else{
-                this.mob_box[index].tick(time, this.Player)
+        if(this.gameRunning){
+            //dm tick
+            if(this.mob_box.length<this.num_mobs){
+                this.mob_roll(time)
             }
-           
+            let min_dist = 25
+
+            //for some reason it seems the distance is off by 48 in the x and 24 in the y direction
+            for( var index in this.mob_box){
+                let mob = this.mob_box[index]
+                
+                let distance = distTo(this.Player.sprite, mob.x, mob.y)
+                // console.log("Player distance: " + distance)
+
+                //Either Hostile or Not based on distance
+                if(distance < 215){
+                    mob.attack(this.Player, distance)
+                }else{
+                    this.mob_box[index].tick(time, this.Player)
+                }
+            
+            }
         }
        
     }
@@ -759,12 +762,22 @@ function moveObject( something, x, y){
 }
 
 function winGame(){
+    this.DM.gameRunning = false
     this.player.visible = false
     this.gameRunning = false
+    gameWonText.x = camera.scrollX + (camera.width/2)-280
+    gameWonText.y = camera.scrollY + (camera.height/2)-150
     gameWonText.visible = true
+    let grand_event = function(){
+        this.player.destroy()
+    }
+    this.timedEvent = this.time.delayedCall(1500, grand_event, [], this)
+
+
 }
 
 function gameOver(){
+
     shakeTime = 2000
     this.gameRunning = false
     console.log("ded")
@@ -778,7 +791,8 @@ function gameOver(){
     gameOverText.x = camera.scrollX + (camera.width/2)-280
     gameOverText.y = camera.scrollY + (camera.height/2)-150
     gameOverText.visible = true
-    
+    player.visible = false
+    this.DM.gameRunning = false
     let grand_event = function(){
         this.player.destroy()
     }
