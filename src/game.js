@@ -781,7 +781,6 @@ function gameOver(){
     gameOverText.y = player.y - 100
     gameOverText.visible = true
     player.visible = false
-    this.DM.gameRunning = false
     let grand_event = function(){
         this.player.destroy()
     }
