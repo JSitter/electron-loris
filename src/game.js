@@ -517,12 +517,14 @@ sceneOne.create = function(){
     console.log("Gamve 0over textg")
     console.log(gameOverText)
 
-    leftKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J)
-    rightKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L)
-    downKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K)
-    upKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I)
-    angleKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
-    healthKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.H)
+    // leftKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J)
+    // rightKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L)
+    // downKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K)
+    // upKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I)
+    // angleKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
+    // healthKey = game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.H)
+
+    cursors = this.input.keyboard.createCursorKeys();
 
     player = this.physics.add.sprite(300, 150, 'loris');
     this.cameras.main.startFollow(player)
@@ -533,7 +535,7 @@ sceneOne.create = function(){
     console.log(this.Player)
 
     //Create Dungeon Master
-    this.DM = new dungeonMaster("wolf", 1, 7, this.physics.add, this.Finder, this.Player, this.time)
+    this.DM = new dungeonMaster("wolf", 4, 7, this.physics.add, this.Finder, this.Player, this.time)
 
     player.setBounce(0.2);
     console.log("Game Object:")
@@ -593,7 +595,7 @@ sceneOne.update = function(time, delta){
     }
     let player_move_amt = 60
 
-    movePlayer(leftKey, rightKey, upKey, downKey, player_move_amt)
+    movePlayer(cursors, player_move_amt)
     this.DM.tick(time, delta)
 
     //This is for animated tiles
@@ -792,28 +794,28 @@ function gameOver(){
 
 
 
-function movePlayer(leftKey, rightKey, upKey , downKey, distance){
+function movePlayer(cursors, distance){
     x = 0
     y = 0
     
 
-    if (leftKey.isDown){
+    if (cursors.left.isDown){
         x -= distance
         this.player.anims.play("player-left", true)
         this.lastPress = "left"
 
-    }else if (rightKey.isDown){
+    }else if (cursors.right.isDown){
         x += distance
         this.player.anims.play("player-right", true)
         this.lastPress = "right"
     }
-    else if (upKey.isDown){
+    else if (cursors.up.isDown){
         y -= distance
         this.player.anims.play("player-up", true)
         this.lastPress = "up"
         
     }
-    else if(downKey.isDown){
+    else if(cursors.down.isDown){
         y += distance
         player.anims.play("player-down", true)
         this.lastPress = "down"
